@@ -1,2 +1,1 @@
-﻿  ConsoleApplication5.cpp
-  ConsoleApplication5.vcxproj -> C:\Users\eloni\source\repos\ConsoleApplication7\x64\Debug\ConsoleApplication5.exe
+﻿C:\Users\Andreas\source\repos\P4\Sandbox\Sensors\RGB camera\ConsoleApplication7\ConsoleApplication5\ConsoleApplication5.vcxproj(72,5): error MSB4019: The imported project "C:\Users\Andreas\source\repos\P4\Sandbox\Documents\__University\Semester 4\Project\PvAPISDK.props" was not found. Confirm that the path in the <Import> declaration is correct, and that the file exists on disk.

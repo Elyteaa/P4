@@ -1,0 +1,108 @@
+﻿  Perc5_mar21.cpp
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(11): error C2871: 'cv': a namespace with this name does not exist
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(15): warning C4326: return type of 'main' should be 'int' instead of 'void'
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(16): error C2065: 'Mat': undeclared identifier
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(16): error C2146: syntax error: missing ';' before identifier 'img'
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(16): error C2065: 'img': undeclared identifier
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(16): error C3861: 'imread': identifier not found
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(17): error C2065: 'Mat': undeclared identifier
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(17): error C2146: syntax error: missing ';' before identifier 'bin'
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(17): error C2065: 'bin': undeclared identifier
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(17): error C2065: 'img': undeclared identifier
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(17): error C2228: left of '.rows' must have class/struct/union
+  c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(17): note: type is 'unknown-type'
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(17): error C2228: left of '.cols' must have class/struct/union
+  c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(17): note: type is 'unknown-type'
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(17): error C2065: 'CV_8U': undeclared identifier
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(17): error C3861: 'Mat': identifier not found
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(18): error C2065: 'Mat': undeclared identifier
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(18): error C2146: syntax error: missing ';' before identifier 'morph1'
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(18): error C2065: 'morph1': undeclared identifier
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(18): error C2065: 'img': undeclared identifier
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(18): error C2228: left of '.rows' must have class/struct/union
+  c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(18): note: type is 'unknown-type'
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(18): error C2228: left of '.cols' must have class/struct/union
+  c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(18): note: type is 'unknown-type'
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(18): error C2065: 'CV_8U': undeclared identifier
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(18): error C3861: 'Mat': identifier not found
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(19): error C2065: 'Mat': undeclared identifier
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(19): error C2146: syntax error: missing ';' before identifier 'morph2'
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(19): error C2065: 'morph2': undeclared identifier
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(19): error C2065: 'img': undeclared identifier
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(19): error C2228: left of '.rows' must have class/struct/union
+  c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(19): note: type is 'unknown-type'
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(19): error C2228: left of '.cols' must have class/struct/union
+  c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(19): note: type is 'unknown-type'
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(19): error C2065: 'CV_8U': undeclared identifier
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(19): error C3861: 'Mat': identifier not found
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(20): error C2065: 'Mat': undeclared identifier
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(20): error C2146: syntax error: missing ';' before identifier 'contourImg'
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(20): error C2065: 'contourImg': undeclared identifier
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(20): error C2065: 'img': undeclared identifier
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(20): error C2228: left of '.rows' must have class/struct/union
+  c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(20): note: type is 'unknown-type'
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(20): error C2065: 'CV_8UC3': undeclared identifier
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(20): error C3861: 'Mat': identifier not found
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(22): error C2065: 'img': undeclared identifier
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(22): error C2228: left of '.cols' must have class/struct/union
+  c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(22): note: type is 'unknown-type'
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(23): error C2065: 'img': undeclared identifier
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(23): error C2228: left of '.rows' must have class/struct/union
+  c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(23): note: type is 'unknown-type'
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(24): error C2065: 'img': undeclared identifier
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(24): error C2228: left of '.at' must have class/struct/union
+  c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(24): note: type is 'unknown-type'
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(24): error C2065: 'Vec3b': undeclared identifier
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(24): error C3861: 'Point': identifier not found
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(25): error C2065: 'bin': undeclared identifier
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(25): error C2228: left of '.at' must have class/struct/union
+  c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(25): note: type is 'unknown-type'
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(25): error C2065: 'uchar': undeclared identifier
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(25): error C3861: 'Point': identifier not found
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(28): error C2065: 'bin': undeclared identifier
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(28): error C2228: left of '.at' must have class/struct/union
+  c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(28): note: type is 'unknown-type'
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(28): error C2065: 'uchar': undeclared identifier
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(28): error C3861: 'Point': identifier not found
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(34): error C2065: 'Mat': undeclared identifier
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(34): error C2146: syntax error: missing ';' before identifier 'element'
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(34): error C2065: 'element': undeclared identifier
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(34): error C2065: 'MORPH_RECT': undeclared identifier
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(34): error C3861: 'Size': identifier not found
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(34): error C3861: 'getStructuringElement': identifier not found
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(35): error C2065: 'bin': undeclared identifier
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(35): error C2065: 'morph1': undeclared identifier
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(35): error C2065: 'MORPH_CLOSE': undeclared identifier
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(35): error C2065: 'element': undeclared identifier
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(35): error C3861: 'morphologyEx': identifier not found
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(36): error C2065: 'morph1': undeclared identifier
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(36): error C2065: 'morph2': undeclared identifier
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(36): error C2065: 'MORPH_OPEN': undeclared identifier
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(36): error C2065: 'element': undeclared identifier
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(36): error C3861: 'morphologyEx': identifier not found
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(38): error C2065: 'vector': undeclared identifier
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(38): error C2065: 'Point': undeclared identifier
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(38): error C2065: 'contours': undeclared identifier
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(40): error C2065: 'morph2': undeclared identifier
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(40): error C2065: 'contours': undeclared identifier
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(40): error C2065: 'CV_RETR_EXTERNAL': undeclared identifier
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(40): error C2065: 'CV_CHAIN_APPROX_SIMPLE': undeclared identifier
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(40): error C3861: 'findContours': identifier not found
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(42): error C2065: 'contours': undeclared identifier
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(42): error C2228: left of '.size' must have class/struct/union
+  c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(42): note: type is 'unknown-type'
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(43): error C2065: 'contourImg': undeclared identifier
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(43): error C2065: 'contours': undeclared identifier
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(43): error C3861: 'Scalar': identifier not found
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(43): error C3861: 'drawContours': identifier not found
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(46): error C2065: 'img': undeclared identifier
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(46): error C3861: 'imshow': identifier not found
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(47): error C2065: 'bin': undeclared identifier
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(47): error C3861: 'imshow': identifier not found
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(48): error C2065: 'morph1': undeclared identifier
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(48): error C3861: 'imshow': identifier not found
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(49): error C2065: 'morph2': undeclared identifier
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(49): error C3861: 'imshow': identifier not found
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(50): error C2065: 'contourImg': undeclared identifier
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(50): error C3861: 'imshow': identifier not found
+c:\users\andreas\source\repos\perc5_mar21\perc5_mar21\perc5_mar21.cpp(51): error C3861: 'cvWaitKey': identifier not found
