@@ -11,15 +11,11 @@ using namespace std;
 
 int main()
 {
-	Mat img = imread("kek.jpg");
+	Mat img = imread("tools.jpg");
 	Mat bin = Mat(img.rows, img.cols, CV_8U);
 	Mat morph1 = Mat(img.rows, img.cols, CV_8U);
 	Mat morph2 = Mat(img.rows, img.cols, CV_8U);
 	Mat contourImg = Mat(img.rows, img.rows, CV_8UC3);
-
-	cout << "passed";
-	imshow("beginning", contourImg);
-	cvWaitkey(1000);
 
 	for (int x = 0; x < img.cols; x++) {
 		for (int y = 0; y < img.rows; y++) {
