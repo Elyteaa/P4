@@ -1,0 +1,79 @@
+#include "opencv2/imgcodecs.hpp"
+#include "opencv2/imgproc.hpp"
+#include "opencv2/videoio.hpp"
+#include <opencv2/highgui.hpp>
+#include <opencv2/video.hpp>
+//C
+#include <stdio.h>
+//C++
+#include <iostream>
+#include <sstream>
+
+
+using namespace cv;
+using namespace std;
+
+// Global variables
+Mat frame;
+Mat fgMaskMOG2;
+Ptr<BackgroundSubtractor> pMOG2;
+int threshold_value = 0;
+int threshold_type = 3;
+int const max_value = 255;
+int const max_type = 4;
+int const max_BINARY_value = 255;
+char* track;
+int value = 255;
+Mat dst;
+
+class BackgroundSubtractor : public Algorithm
+{
+public:
+    virtual ~BackgroundSubtractor();
+    virtual void apply(InputArray image, OutputArray fgmask, double learningRate=0);
+    virtual void getBackgroundImage(OutputArray backgroundImage) const;
+};
+//void Threshold_Demo(int, void*);
+
+//void Background(char* VideoCapture cap(0)){
+//void BackgroundSubtractor::apply(image, fgmask, -1);
+//pMOG2->apply(frame, fgMaskMOG2);
+//imshow("Subtract", fgMaskMOG2);
+//void BackgroundSubtractor::get
+//}
+
+int main()
+{
+pMOG2 = createBackgroundSubtractorMOG2(); //MOG2 approach
+
+    namedWindow("video", 1);
+createTrackbar(track, "Threshold", &threshold_type, max_type);
+    VideoCapture cap(0);
+    if(!cap.isOpened())
+    {
+        cout<<"Camera not found"<<endl;
+        getchar();
+        return -1;
+    }
+    while ( cap.isOpened() )
+    {
+        cap >> frame;
+        if(frame.empty()) break;
+	//void Background(char* VideoCapture cap(0));
+	pMOG2->apply(frame, fgMaskMOG2);
+	imshow("Subtract", fgMaskMOG2);
+        imshow("video", frame);
+	threshold(fgMaskMOG2, dst, threshold_value, max_BINARY_value, threshold_type);
+	imshow("Threshold", dst);
+        if(waitKey(30) >= 0) break;
+    }  
+
+
+    return 0;
+}
+
+//void Threshold_Demo(int, void*)
+//{
+//threshold(fgMaskMOG2, dst, threshold_value, max_BINARY_value, threshold_type);
+//imshow("Threshold", dst);
+//}
