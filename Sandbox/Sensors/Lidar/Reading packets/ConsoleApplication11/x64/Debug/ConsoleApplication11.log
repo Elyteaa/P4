@@ -1,0 +1,5 @@
+﻿  ConsoleApplication11.cpp
+c:\users\eloni\source\repos\consoleapplication11\consoleapplication11\consoleapplication11.cpp(25): warning C4554: '<<': check operator precedence for possible error; use parentheses to clarify precedence
+c:\users\eloni\source\repos\consoleapplication11\consoleapplication11\consoleapplication11.cpp(25): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\eloni\source\repos\consoleapplication11\consoleapplication11\consoleapplication11.cpp(26): warning C4554: '<<': check operator precedence for possible error; use parentheses to clarify precedence
+  ConsoleApplication11.vcxproj -> C:\Users\eloni\source\repos\ConsoleApplication11\x64\Debug\ConsoleApplication11.exe
