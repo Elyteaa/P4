@@ -1,0 +1,112 @@
+#include <opencv2/opencv.hpp>
+#include <iostream>
+#include "opencv2/highgui.hpp"
+#include "opencv2/imgproc.hpp"
+#include <stdio.h>
+#include <stdlib.h>
+
+
+using namespace std;
+using namespace cv;
+Mat frame;
+Mat edge; 
+Mat draw;
+Mat kernel;
+int kernel_size;
+Mat grayscaleMat (frame.size(), CV_8U);
+Mat morph;
+int thresh = 100;
+int thresh_max = 255;
+Mat threshMat;
+int morph_size = 3;
+Mat dst;
+int ind = 0;
+Mat binaryMat2;
+int MAX_KERNEL_LENGTH = 31;
+int main(int, char** argv)
+{
+namedWindow("video", 1);
+    VideoCapture cap(0);
+if(!cap.isOpened())
+    {
+        cout<<"Camera not found"<<endl;
+        getchar();
+        return -1;
+    }
+while ( cap.isOpened() )
+    {
+        cap >> frame;
+	cvtColor( frame, grayscaleMat, CV_BGR2GRAY );
+	//imshow("gray", grayscaleMat);
+		
+	Mat binaryMat(grayscaleMat.size(), grayscaleMat.type());
+	threshold(grayscaleMat, binaryMat, 100, 255, THRESH_BINARY);
+//adaptiveThreshold(grayscaleMat, binaryMat, 255, ADAPTIVE_THRESH_MEAN_C, THRESH_BINARY, 31, 1);
+	//Canny( binaryMat, edge, 50, 150, 3);
+        //edge.convertTo(draw, CV_8U);
+	//imshow("Thresh", threshMat);
+	imshow("Binary", binaryMat);
+	// for ( int i = 1; i < MAX_KERNEL_LENGTH; i = i + 2 )
+         //{
+	   //GaussianBlur(binaryMat, binaryMat2, Size( i, i ), 0,0 );
+	 //}
+	//imshow("blur", binaryMat2);
+	//morph = dilate(erode(binaryMat,dst,element));
+	//Mat element = getStructuringElement(MORPH_ELLIPSE, Size( 4*morph_size + 1, 2*morph_size+1 ), Point(-1, -1) );
+	int iterations=3;
+	 /*Mat kernel = (Mat_<float>(3,3) <<
+            1,  1, 1,
+            1,  1, 1,
+            1,  1, 1); */
+	
+	kernel_size = 3 + 2*( ind%5 );
+        kernel = Mat::ones( kernel_size, kernel_size, CV_32F )/ (float)(kernel_size*kernel_size);
+
+	morphologyEx(binaryMat, morph, MORPH_RECT, kernel, Point(-1, -1), iterations);
+	imshow("morph", morph);
+
+	/*// Set up the detector with default parameters.
+	SimpleBlobDetector detector;
+ 
+	// Detect blobs.
+	vector<KeyPoint> keypoints;
+	detector.detect( morph, keypoints);
+ 
+	// Draw detected blobs as red circles.
+	// DrawMatchesFlags::DRAW_RICH_KEYPOINTS flag ensures the size of the circle corresponds 	to the size of blob
+	Mat im_with_keypoints;
+	drawKeypoints( morph, keypoints, im_with_keypoints, Scalar(0,0,255), 			DrawMatchesFlags::DRAW_RICH_KEYPOINTS );
+  	imshow("blob", im_with_keypoints);*/
+	
+	SimpleBlobDetector::Params params;
+	
+	params.filterByColor = true;
+	params.blobColor = 255;
+	//params.filterByCircularity = true;
+	//params.minCircularity = 0.785;
+	params.filterByArea = true;
+	params.minArea = 10;
+	vector<KeyPoint> keypoints;
+
+	#if CV_MAJOR_VERSION < 3 
+	SimpleBlobDetector detecter(params);
+	detector.detect(morph, keypoints);
+	#else
+	Ptr<SimpleBlobDetector> detector = SimpleBlobDetector::create(params);
+	detector->detect(morph, keypoints);
+	#endif
+	
+	
+	Mat im_with_keypoints;
+	drawKeypoints( morph, keypoints, im_with_keypoints, Scalar(0,0,255), 			DrawMatchesFlags::DRAW_RICH_KEYPOINTS );
+  	imshow("blob", im_with_keypoints);
+	
+	//imshow("canny", draw);
+        if(frame.empty()) break;
+ 	if(waitKey(30) >= 0) break;
+    } 
+    return 0;
+}
+
+
+//"http://169.254.228.255/mjpg/video.mjpg?"
