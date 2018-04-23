@@ -17,16 +17,18 @@ catkin_package()
 ## Build talker and listener
 include_directories(include ${catkin_INCLUDE_DIRS})
 
-add_executable(talker src/talker.cpp)
-target_link_libraries(talker ${catkin_LIBRARIES})
-add_dependencies(talker beginner_tutorials_generate_messages_cpp)
+#add_executable(talker src/talker.cpp)
+#target_link_libraries(talker ${catkin_LIBRARIES})
+#add_dependencies(talker beginner_tutorials_generate_messages_cpp)
 
 add_executable(listener src/listener.cpp)
 target_link_libraries(listener ${catkin_LIBRARIES})
 add_dependencies(listener beginner_tutorials_generate_messages_cpp)
 
-add_executable(open_node src/main.cpp)
-#find_package(OpenCV REQUIRED)
-find_package(OpenCV REQUIRED highgui imgproc)
+add_executable(turtlebot_move src/hello_turtle.cpp)
+target_link_libraries(turtlebot_move ${catkin_LIBRARIES})
+
+add_executable(talker src/talker.cpp)
+find_package(OpenCV REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS})
-target_link_libraries(open_node ${OpenCV_LIBRARIES})
+target_link_libraries(talker ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
