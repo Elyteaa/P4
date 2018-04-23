@@ -1,0 +1,82 @@
+#include <opencv2/opencv.hpp>
+#include <iostream>
+#include "opencv2/highgui.hpp"
+#include "opencv2/imgproc.hpp"
+#include <stdio.h>
+#include <stdlib.h>
+
+
+using namespace std;
+using namespace cv;
+
+//Global variables
+Mat frame;
+int iterations = 5;
+Mat kernel;
+int ind;
+int kernel_size = 3 + 2*( ind%5 );
+int r;
+
+
+int main(int, char** argv)
+{
+  frame = imread("trees.jpg");
+    imshow("norm", frame);
+  cvtColor( frame, frame, CV_BGR2GRAY ); //Convert the image to grayscale
+    imshow("gray", frame);
+  threshold( frame, frame, 0,255,THRESH_BINARY | THRESH_OTSU);
+    imshow("binary", frame);
+  medianBlur(frame, frame, 5);
+    imshow("blur", frame);
+  
+  kernel = Mat::ones( kernel_size, kernel_size, CV_32F )/ (float)(kernel_size*kernel_size);
+  morphologyEx(frame, frame, MORPH_RECT, kernel, Point(-1, -1), iterations);
+    imshow("morph", frame);
+
+	
+	vector<vector<Point> > contours;
+  	vector<Vec4i> hierarchy;
+
+  findContours( frame, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0) );
+  cvtColor( frame, frame, CV_GRAY2BGR);
+	vector<vector<Point> > contours_poly(contours.size() );
+	vector<Rect> boundRect(contours.size() );
+
+  for( int i = 0; i < contours.size(); i++ )
+   { 
+    approxPolyDP( Mat(contours[i]), contours_poly[i], 3, true );
+    boundRect[i] = boundingRect( Mat(contours_poly[i]) );
+    cout << boundRect[i].tl() << " " << boundRect[i].br() << endl;
+   }
+
+  for( int i = 0; i< contours.size(); i++ )
+   {
+    Scalar color = Scalar(0,0, 255);
+    Scalar color1 = Scalar(0,255, 0);
+    rectangle(frame, boundRect[i].tl(), boundRect[i].br(), color1, 2, 8, 0 );
+    drawContours(frame, contours, i, color, 2, 8, hierarchy, 0, Point() ); 
+   }
+  
+  
+  unsigned char *input = (unsigned char*)(frame.data);
+  for(int j = 0;j < frame.rows;j++){
+    for(int i = 0;i < frame.cols;i++){
+        unsigned char b = input[frame.step * j + i*frame.channels()];
+        unsigned char g = input[frame.step * j + i*frame.channels() + 1];
+        unsigned char r = input[frame.step * j + i*frame.channels() + 2];
+	//frame.at<uchar>(j,i) = (frame.at<Vec3b>(j,i)[0]+frame.at<Vec3b>(j,i)[1]+frame.at<Vec3b>(j,i)[2])/3;	
+	if(frame.at<Vec3b>(j,i)[1] == 255)
+	{	
+		//frame.at<Vec3b>(j,i)[0] = 120;
+		//frame.at<Vec3b>(j,i)[1] = frame.at<Vec3b>(j,i)[0];
+		//cout << boundRect[i].size() << endl;
+	}
+    }
+}
+	//Show the image
+  
+  imshow("sourceimg", frame);
+	
+  waitKey(0);
+    return 0;
+}
