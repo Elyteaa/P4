@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(beginner_tutorials)
 
-## Find catkin and any catkin packages
+## Find catkin and any catkin packagescc
 find_package(catkin REQUIRED COMPONENTS roscpp rospy std_msgs sensor_msgs genmsg cv_bridge image_transport)
 
 ## Declare ROS messages and services
@@ -12,7 +12,8 @@ add_service_files(FILES AddTwoInts.srv)
 generate_messages(DEPENDENCIES std_msgs sensor_msgs)
 
 ## Declare a catkin package
-catkin_package()
+catkin_package(
+)
 
 ## Build talker and listener
 include_directories(include ${catkin_INCLUDE_DIRS})
@@ -27,6 +28,10 @@ include_directories(include ${catkin_INCLUDE_DIRS})
 
 add_executable(turtlebot_move src/hello_turtle.cpp)
 target_link_libraries(turtlebot_move ${catkin_LIBRARIES})
+
+add_executable(asus_node src/asus.cpp)
+target_link_libraries(asus_node ${catkin_LIBRARIES})
+#add_dependencies(asus_node beginner_tutorials_generate_messages_cpp)
 
 add_executable(talker src/talker.cpp)
 find_package(OpenCV REQUIRED)
