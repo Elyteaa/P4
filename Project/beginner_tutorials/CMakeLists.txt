@@ -24,19 +24,19 @@ include_directories(include ${catkin_INCLUDE_DIRS})
 
 #add_executable(listener src/listener.cpp)
 #target_link_libraries(listener ${catkin_LIBRARIES})
-#add_dependencies(listener beginner_tutorials_generate_messages_cpp)
+#add_dependencies(listener beginner_lstutorials_generate_messages_cpp)
 
 add_executable(turtlebot_move src/hello_turtle.cpp)
 target_link_libraries(turtlebot_move ${catkin_LIBRARIES})
 
 add_executable(asus_node src/asus.cpp)
 target_link_libraries(asus_node ${catkin_LIBRARIES})
-#add_dependencies(asus_node beginner_tutorials_generate_messages_cpp)
+add_dependencies(asus_node beginner_tutorials_generate_messages_cpp)
 
-add_executable(talker src/talker.cpp)
-find_package(OpenCV REQUIRED)
-include_directories(${OpenCV_INCLUDE_DIRS})
-target_link_libraries(talker ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
+#add_executable(thermal_node src/thermal.cpp)
+#find_package(OpenCV REQUIRED)
+#include_directories(${OpenCV_INCLUDE_DIRS})
+#target_link_libraries(thermal_node ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
 
 add_executable(rgb_cam_node src/RGB.cpp)
 find_package(OpenCV REQUIRED)

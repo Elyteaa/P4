@@ -7,7 +7,7 @@ ROS_INFO("Angle [%f] and distance [%f]", msg->angle_min, msg->ranges[0]);
 }
 
 int main(int argc, char **argv){
-ros::init(argc,argc,"listener");
+ros::init(argc,argv,"listener");
 ros::NodeHandle n;
 ros::Subscriber sub = n.subscribe("chatter", 100, callback);
 
