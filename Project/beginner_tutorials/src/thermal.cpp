@@ -125,7 +125,8 @@ while (cap.isOpened())
 	}
 
 	imshow("sourceimg", frame);
-	cvWaitKey(30);
+	if(frame.empty()) break;
+ 	if(waitKey(30) >= 0) break;
 	}
   return 0;
 }
