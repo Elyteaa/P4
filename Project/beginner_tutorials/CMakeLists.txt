@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8.3)
 project(beginner_tutorials)
 
 ## Find catkin and any catkin packagescc
-find_package(catkin REQUIRED COMPONENTS roscpp rospy std_msgs sensor_msgs genmsg cv_bridge image_transport)
+find_package(catkin REQUIRED COMPONENTS roscpp rospy std_msgs sensor_msgs message_generation cv_bridge image_transport)
 
 ## Declare ROS messages and services
 add_message_files(FILES Num.msg)
@@ -14,6 +14,7 @@ generate_messages(DEPENDENCIES std_msgs sensor_msgs)
 
 ## Declare a catkin package
 catkin_package(
+CATKIN_DEPENDS message_runtime
 )
 
 ## Build talker and listener

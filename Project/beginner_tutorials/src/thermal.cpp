@@ -98,7 +98,7 @@ while (cap.isOpened())
 		drawContours(frame, contours, i, color, 2, 8, hierarchy, 0, Point());
 	}
 
-	beginner_tutorials::thermalRect msg;
+	//beginner_tutorials::thermalRect msg;
 
 	for (int j = 0; j < human.size(); j++) {
 		Scalar color1 = Scalar(255, 0, 0); //blue
@@ -106,6 +106,7 @@ while (cap.isOpened())
 		rectangle(frame, boundRect[human[j]].tl(), boundRect[human[j]].br(), color1, 2, 8, 0);
 
 		if (ros::ok()) {
+			beginner_tutorials::thermalRect msg;
 			msg.beg = boundRect[human[j]].x;
 			int end;
 			end = boundRect[human[j]].x + boundRect[human[j]].width;
