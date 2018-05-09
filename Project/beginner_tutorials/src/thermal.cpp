@@ -1,5 +1,5 @@
 #include "ros/ros.h"
-#include "std_msgs/String.h"
+#include "std_msgs/Int8MultiArray.h"
 
 #include <sstream>
 
@@ -10,7 +10,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <cmath>
-#include "beginner_tutorials/thermalRect.h"
+//#include "beginner_tutorials/thermalRect.h"
 
 using namespace std;
 using namespace cv;
@@ -106,11 +106,10 @@ while (cap.isOpened())
 		rectangle(frame, boundRect[human[j]].tl(), boundRect[human[j]].br(), color1, 2, 8, 0);
 
 		if (ros::ok()) {
-			beginner_tutorials::thermalRect msg;
-			msg.beg = boundRect[human[j]].x;
+			std_msgs::Int8MultiArray msg;
 			int end;
 			end = boundRect[human[j]].x + boundRect[human[j]].width;
-			msg.end = end;
+			msg.data = [boundRect[human[j]].x, end];
 			chatter_pub.publish(msg);
 			ros::spinOnce();
 			loop_rate.sleep();
