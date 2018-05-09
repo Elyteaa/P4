@@ -1,5 +1,5 @@
 #include "ros/ros.h"
-#include "std_msgs/Int8MultiArray.h"
+#include "std_msgs/Int32MultiArray.h"
 
 #include <sstream>
 
@@ -26,7 +26,7 @@ int main(int argc, char **argv)
   ros::init(argc, argv, "thermal_node_cpp");
   ros::NodeHandle n;
 
-  ros::Publisher chatter_pub = n.advertise<std_msgs::Int8MultiArray>("/thermalHumans", 10);
+  ros::Publisher chatter_pub = n.advertise<std_msgs::Int32MultiArray>("/thermalHumans", 10);
 
   ros::Rate loop_rate(10);
 
@@ -106,15 +106,19 @@ while (cap.isOpened())
 		rectangle(frame, boundRect[human[j]].tl(), boundRect[human[j]].br(), color1, 2, 8, 0);
 
 		if (ros::ok()) {
-			std_msgs::Int8MultiArray msg;
+			std_msgs::Int32MultiArray msg;
 			msg.data.clear();
+			//std_msgs::Int32 msg2;
 			int begin = boundRect[human[j]].x;
-			int end;
-			end = boundRect[human[j]].x + boundRect[human[j]].width;
-			msg.data.push_back(begin);			
-			msg.data.push_back(end);
+			int bend;
+			bend = boundRect[human[j]].x + boundRect[human[j]].width;
+			cout << begin << " " << bend << endl;
+			msg.data.push_back(begin);
+			msg.data.push_back(bend);
+			//msg2.data = bend;
 			//msg.data = [begin, end];
 			chatter_pub.publish(msg);
+			//chatter_pub.publish(msg2);
 			ros::spinOnce();
 			loop_rate.sleep();
 		}
