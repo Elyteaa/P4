@@ -6,6 +6,7 @@ find_package(catkin REQUIRED COMPONENTS roscpp rospy std_msgs sensor_msgs genmsg
 
 ## Declare ROS messages and services
 add_message_files(FILES Num.msg)
+add_message_files(FILES thermalRect.msg)
 add_service_files(FILES AddTwoInts.srv)
 
 ## Generate added messages and services
@@ -37,6 +38,7 @@ add_executable(thermal_node src/thermal.cpp)
 find_package(OpenCV REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS})
 target_link_libraries(thermal_node ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
+add_dependencies(thermal_node beginner_tutorials_generate_message_cpp)
 
 add_executable(rgb_cam_node src/RGB.cpp)
 find_package(OpenCV REQUIRED)
