@@ -26,7 +26,7 @@ int main(int argc, char **argv)
   ros::init(argc, argv, "thermal_node_cpp");
   ros::NodeHandle n;
 
-  ros::Publisher chatter_pub = n.advertise<beginner_tutorials::thermalRect>("/thermalHumans", 10);
+  ros::Publisher chatter_pub = n.advertise<std_msgs::Int8MultiArray>("/thermalHumans", 10);
 
   ros::Rate loop_rate(10);
 
@@ -107,9 +107,13 @@ while (cap.isOpened())
 
 		if (ros::ok()) {
 			std_msgs::Int8MultiArray msg;
+			msg.data.clear();
+			int begin = boundRect[human[j]].x;
 			int end;
 			end = boundRect[human[j]].x + boundRect[human[j]].width;
-			msg.data = [boundRect[human[j]].x, end];
+			msg.data.push_back(begin);			
+			msg.data.push_back(end);
+			//msg.data = [begin, end];
 			chatter_pub.publish(msg);
 			ros::spinOnce();
 			loop_rate.sleep();
