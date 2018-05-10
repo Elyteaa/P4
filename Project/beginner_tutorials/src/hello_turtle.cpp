@@ -93,9 +93,16 @@ int main(int argc, char** argv)
 	ros::init(argc, argv, "robot_driver");
 	ros::NodeHandle nh;
 
+	ros::Rate loop_rate(10);
+
 	RobotDriver driver(nh);
 
 	ros::Subscriber cmd_status_sub = nh.subscribe("/turtleCommands", 10, turtleMove);
 
-	driver.driveKeyboard();
+	while (ros::ok()) {
+		driver.driveKeyboard();
+		ros::spinOnce();
+		loop_rate.sleep();
+	}
+
 }
