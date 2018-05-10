@@ -1,7 +1,7 @@
 #include "ros/ros.h"
 #include "sensor_msgs/LaserScan.h"
 #include "std_msgs/Int32MultiArray.h"
-#include "std_msgs/Int8.h"
+#include "std_msgs/Int32.h"
 
 int distance[640];
 int x, y;
@@ -25,13 +25,13 @@ int main(int argc, char **argv){
 	ros::init(argc,argv,"asus_camera");
 	ros::NodeHandle nh;
 
-	ros::Publisher pub = nh.advertise<std_msgs::Int8>("/turtleCommands", 10);
+	ros::Publisher pub = nh.advertise<std_msgs::Int32>("/turtleCommands", 10);
 	ros::Subscriber sub = nh.subscribe("/scan", 10, sensor);
 	ros::Subscriber sub2 = nh.subscribe("/thermalHumans", 10, humans);
 
 	std_msgs::Int32MultiArray msgh;
 	sensor_msgs::LaserScan msgs;
-	std_msgs::Int8 turtle;
+	std_msgs::Int32 turtle;
 
 	ros::Rate loop_rate(10);
 
@@ -40,14 +40,14 @@ int main(int argc, char **argv){
 		for (int i = x; i < y; i++) {
 			if (distance[i] <= 2) {
 				cout << "A human is closer than 2 meters" << endl;
-				//turtle = 0;
-				//pub.publish(turtle);
+				turtle.data = 0;
+				pub.publish(turtle);
 				break;
 			}
 			else
 			{
-//				turtle = 1;
-//				pub.publish(turtle);
+				turtle.data = 1;
+				pub.publish(turtle);
 			}
 		}
 	}
