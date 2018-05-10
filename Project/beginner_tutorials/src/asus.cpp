@@ -8,7 +8,7 @@
 
 //using namespace std;
 
-int distance[640];
+float distance[640];
 int x, y;
 
 void sensor(const sensor_msgs::LaserScan::ConstPtr& msgs)
