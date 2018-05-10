@@ -39,6 +39,7 @@ int main(int argc, char **argv){
 	{
 		for (int i = x; i < y; i++) {
 			if (distance[i] <= 2) {
+				cout << "A human is closer than 2 meters" << endl;
 				//turtle = 0;
 				//pub.publish(turtle);
 				break;
