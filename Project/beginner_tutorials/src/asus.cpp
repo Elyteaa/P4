@@ -15,8 +15,9 @@ void sensor(const sensor_msgs::LaserScan::ConstPtr& msgs)
 {
 	for (int i = 0; i < 640; i++) {
 		distance[i] = msgs->ranges[i];
+		std::cout << distance[i] << std::endl;
 	}
-	//ROS_INFO("Angle [%f] and distance [%f]", msg->angle_min, msg->ranges[0]);
+	ROS_INFO("Angle [%f] and distance [%f]", msgs->angle_min, msgs->ranges[0]);
 }
 
 void humans(const std_msgs::Int32MultiArray::ConstPtr& msgh)
@@ -47,12 +48,13 @@ int main(int argc, char **argv){
 		for(int i = 0; i < 640; i++){
 			if ((i >= x+171) && (i <= y + 171) && (distance[i] <=1)) //if it's a range, where a human has been detected
 			{
-				std::cout << "A human is closer than 1 meter" << std::endl;
+				//std::cout << "A human is closer than 1 meter" << std::endl;
 				turtle.data = 0;
 				pub.publish(turtle); //message sent to the turtlebot to stop
 			}
-			else if (distance[i] <= 0.5) {
-				std::cout << "There's an obsticle closer than 0.5 meter" << std::endl;
+			else //if (distance[i] <= 0.5) 
+			{
+				//std::cout << "There's an obsticle - " << distance[i] << std::endl;
 				turtle.data = 0;
 				pub.publish(turtle);
 			}
