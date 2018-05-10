@@ -40,10 +40,24 @@ int main(int argc, char **argv){
 
 	ros::Rate loop_rate(10);
 
+	//whole thermal image is in LaserScan readings between 171 and 477
 	while (ros::ok())
 	{
-		for (int i = x; i < y; i++) {
-			if (distance[i] <= 2) {
+		//for (int i = x+171; i < y; i + 2) {
+		for(int i = 0; i < 640; i++){
+			if ((i >= x+171) && (i <= y + 171) && (distance[i] <=1)) //if it's a range, where a human has been detected
+			{
+				std::cout << "A human is closer than 1 meter" << std::endl;
+				turtle.data = 0;
+				pub.publish(turtle); //message sent to the turtlebot to stop
+			}
+			else if (distance[i] <= 0.5) {
+				std::cout << "There's an obsticle closer than 0.5 meter" << std::endl;
+				turtle.data = 0;
+				pub.publish(turtle);
+			}
+			/*
+			if (distance[i] <= 1) {
 				std::cout << "A human is closer than 2 meters" << std::endl;
 				turtle.data = 0;
 				pub.publish(turtle);
@@ -53,7 +67,7 @@ int main(int argc, char **argv){
 			{
 				turtle.data = 1;
 				pub.publish(turtle);
-			}
+			}*/
 		}
 	}
 
