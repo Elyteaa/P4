@@ -13,7 +13,7 @@ private:
 	ros::NodeHandle nh_;
 	//! We will be publishing to the "/base_controller/command" topic to issue commands
 	ros::Publisher cmd_vel_pub_;
-	ros::Subscriber cmd_status_sub;
+	//ros::Subscriber cmd_status_sub;
 
 public:
 	//! ROS node initialization
@@ -21,14 +21,14 @@ public:
 	{
 		nh_ = nh;
 		//set up the publisher for the cmd_vel topic
-		cmd_status_sub = nh_.subscribe<std_msgs::Int32>("/turtleCommands", 10, &ImageConverter::turtleMove, this);
+		//cmd_status_sub = nh_.subscribe<std_msgs::Int32>("/turtleCommands", 10, &RobotDriver::turtleMove);
 		cmd_vel_pub_ = nh_.advertise<geometry_msgs::Twist>("/cmd_vel_mux/input/teleop", 1);
 	}
 
-	void turtleMove(const std_msgs::Int32& asus_msg_turtle)
+	/*void turtleMove(const std_msgs::Int32& asus_msg_turtle)
 	{
 		turtle_move_command = asus_msg_turtle->data;
-	}
+	}*/
 
 	//! Loop forever while sending drive commands based on keyboard input
 	bool driveKeyboard()
@@ -57,10 +57,7 @@ public:
 			if (turtle_move_command >= 1)
 			{
 				base_cmd.linear.x = 0.25;
-			}
-
-			//move forward
-			if (cmd[0] == 'f') {
+			} else if (cmd[0] == 'f') {
 				base_cmd.linear.x = 0.25;
 			}
 			/*//turn left (yaw) and drive forward at the same time
@@ -83,8 +80,12 @@ public:
 		}
 		return true;
 	}
-
 };
+
+void turtleMove(const std_msgs::Int32::ConstPtr& asus_msg_turtle)
+{
+	turtle_move_command = asus_msg_turtle->data;
+}
 
 int main(int argc, char** argv)
 {
@@ -93,5 +94,8 @@ int main(int argc, char** argv)
 	ros::NodeHandle nh;
 
 	RobotDriver driver(nh);
+
+	ros::Subscriber cmd_status_sub = nh.subscribe("/turtleCommands", 10, turtleMove);
+
 	driver.driveKeyboard();
 }

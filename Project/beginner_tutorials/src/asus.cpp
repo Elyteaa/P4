@@ -1,7 +1,12 @@
+#include <iostream>
+#include <stdio.h>
+#include <stdlib.h>
 #include "ros/ros.h"
 #include "sensor_msgs/LaserScan.h"
 #include "std_msgs/Int32MultiArray.h"
 #include "std_msgs/Int32.h"
+
+//using namespace std;
 
 int distance[640];
 int x, y;
@@ -39,7 +44,7 @@ int main(int argc, char **argv){
 	{
 		for (int i = x; i < y; i++) {
 			if (distance[i] <= 2) {
-				cout << "A human is closer than 2 meters" << endl;
+				std::cout << "A human is closer than 2 meters" << std::endl;
 				turtle.data = 0;
 				pub.publish(turtle);
 				break;
