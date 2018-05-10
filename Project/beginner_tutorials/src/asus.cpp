@@ -1,37 +1,55 @@
 #include "ros/ros.h"
 #include "sensor_msgs/LaserScan.h"
 #include "std_msgs/Int32MultiArray.h"
-
-void sensor(const sensor_msgs::LaserScan::ConstPtr& msg)
-{
-	for (int i = 0; i < 640; i++) {
-		distance[i] = msg->ranges[i];
-	}
-	//ROS_INFO("Angle [%f] and distance [%f]", msg->angle_min, msg->ranges[0]);
-}
-
-void humans(const sensor_msgs::LaserScan::ConstPtr& msg)
-{
-	for (int i = 0; i < 640; i++) {
-		distance[i] = msg->ranges[i];
-	}
-	//ROS_INFO("Angle [%f] and distance [%f]", msg->angle_min, msg->ranges[0]);
-}
+#include "std_msgs/Int8.h"
 
 int distance[640];
+int x, y;
+
+void sensor(const sensor_msgs::LaserScan::ConstPtr& msgs)
+{
+	for (int i = 0; i < 640; i++) {
+		distance[i] = msgs->ranges[i];
+	}
+	//ROS_INFO("Angle [%f] and distance [%f]", msg->angle_min, msg->ranges[0]);
+}
+
+void humans(const std_msgs::Int32MultiArray::ConstPtr& msgh)
+{
+	x = msgh->data[0];
+	y = msgh->data[1];
+	//ROS_INFO("Angle [%f] and distance [%f]", msg->angle_min, msg->ranges[0]);
+}
 
 int main(int argc, char **argv){
 	ros::init(argc,argv,"asus_camera");
 	ros::NodeHandle nh;
-	//ros::Publisher pub = nh.advertise<std_msgs::String>("/thermal", 10);
-	ros::Subscriber sub = nh.subscribe("/scan", 10, sensor);
-	ros::Subscriber sub2 = nh.subscribe("/thermalHumans", 10);
 
-	std_msgs::Int32MultiArray;1
+	ros::Publisher pub = nh.advertise<std_msgs::Int8>("/turtleCommands", 10);
+	ros::Subscriber sub = nh.subscribe("/scan", 10, sensor);
+	ros::Subscriber sub2 = nh.subscribe("/thermalHumans", 10, humans);
+
+	std_msgs::Int32MultiArray msgh;
+	sensor_msgs::LaserScan msgs;
+	std_msgs::Int8 turtle;
 
 	ros::Rate loop_rate(10);
 
-
+	while (ros::ok())
+	{
+		for (int i = x; i < y; i++) {
+			if (distance[i] <= 2) {
+				//turtle = 0;
+				//pub.publish(turtle);
+				break;
+			}
+			else
+			{
+//				turtle = 1;
+//				pub.publish(turtle);
+			}
+		}
+	}
 
 	ros::spin();
 	return 0;
