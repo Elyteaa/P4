@@ -56,9 +56,11 @@ public:
 
 			if (turtle_move_command >= 1)
 			{
-				base_cmd.linear.x = 0.25;
+				base_cmd.linear.x = 0.20;
 			} else if (cmd[0] == 'f') {
 				base_cmd.linear.x = 0.25;
+			} else if (cmd[0] == 0){
+				base_cmd.linear.x = base_cmd.linear.y = base_cmd.angular.z = 0;
 			}
 			/*//turn left (yaw) and drive forward at the same time
 			else if (cmd[0] == 'l') {
@@ -93,16 +95,9 @@ int main(int argc, char** argv)
 	ros::init(argc, argv, "robot_driver");
 	ros::NodeHandle nh;
 
-	ros::Rate loop_rate(10);
-
 	RobotDriver driver(nh);
 
 	ros::Subscriber cmd_status_sub = nh.subscribe("/turtleCommands", 10, turtleMove);
 
-	while (ros::ok()) {
-		driver.driveKeyboard();
-		ros::spinOnce();
-		loop_rate.sleep();
-	}
-
+	driver.driveKeyboard();
 }

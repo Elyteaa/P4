@@ -1,6 +1,8 @@
 #include "ros/ros.h"
 #include "std_msgs/Int32MultiArray.h"
+#include "std_msgs/Float32MultiArray.h"
 
+#include <string>
 #include <sstream>
 
 #include <opencv2/opencv.hpp>
@@ -20,12 +22,20 @@ vector<int> human;
 vector<int> human_prev; 
 vector<Rect> temp;	    
 vector<Rect> boundRect_prev; 
+float human_distance[2];
+
+void callbackDist(const std_msgs::Float32MultiArray::ConstPtr& msgs)
+{
+	human_distance[0] = msgs->data[0];
+	human_distance[1] = msgs->data[1];
+}
 
 int main(int argc, char **argv)
 {
   ros::init(argc, argv, "thermal_node_cpp");
   ros::NodeHandle n;
 
+  ros::Subscriber sub = n.subscribe("/humanDistance", 10, callbackDist);
   ros::Publisher chatter_pub = n.advertise<std_msgs::Int32MultiArray>("/thermalHumans", 10);
 
   ros::Rate loop_rate(10);
@@ -102,7 +112,9 @@ while (cap.isOpened())
 
 	for (int j = 0; j < human.size(); j++) {
 		Scalar color1 = Scalar(255, 0, 0); //blue
-		putText(frame, "Human", Point(boundRect[human[j]].x, boundRect[human[j]].y), FONT_HERSHEY_SIMPLEX, 1.0, Scalar(0, 0, 255));
+		stringstream name;
+		name << "Human. Distance: " << human_distance[1];
+		putText(frame, name.str(), Point(human_distance[0] - 10, boundRect[human[j]].y - 20), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 0, 255));
 		rectangle(frame, boundRect[human[j]].tl(), boundRect[human[j]].br(), color1, 2, 8, 0);
 
 		if (ros::ok()) {
@@ -112,7 +124,7 @@ while (cap.isOpened())
 			int begin = boundRect[human[j]].x;
 			int bend;
 			bend = boundRect[human[j]].x + boundRect[human[j]].width;
-			cout << begin << " " << bend << endl;
+			//cout << begin << " " << bend << endl;
 			msg.data.push_back(begin);
 			msg.data.push_back(bend);
 			//msg2.data = bend;
