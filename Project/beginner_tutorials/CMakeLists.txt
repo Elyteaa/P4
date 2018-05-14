@@ -41,7 +41,7 @@ include_directories(${OpenCV_INCLUDE_DIRS})
 target_link_libraries(thermal_node ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
 add_dependencies(thermal_node beginner_tutorials_generate_messages_cpp)
 
-add_executable(rgb_cam_node src/RGB.cpp)
+add_executable(rgb_cam_node src/carsdetect.cpp)
 find_package(OpenCV REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS})
 target_link_libraries(rgb_cam_node ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
