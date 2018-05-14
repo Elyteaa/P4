@@ -64,6 +64,8 @@ class ImageConverter
 	image_transport::ImageTransport it_;
 	image_transport::Subscriber image_sub_;
 	image_transport::Publisher image_pub_;
+	int argc2;
+	const char** argv2;
 
 public:
 	ImageConverter()
@@ -102,7 +104,7 @@ public:
 
 		while (ros::ok())
 		{
-			CommandLineParser parser(argc, argv,
+			CommandLineParser parser(argc2, argv2,
 				"{help h||}"
 				"{face_cascade|../../data/haarcascades/cars.xml|}"
 				"{eyes_cascade|../../data/haarcascades/bike.xml|}");
@@ -151,7 +153,7 @@ public:
 	//void msgCallback(const sensor_msgs::Image::ConstPtr& msg);
 
 	/** @function main */
-	int main()
+	int main(int argc, char **argv)
 	{
 		ros::init(argc, argv, "RGB_node");
 		ros::NodeHandle n;
