@@ -57,13 +57,6 @@ public:
 		if (cv_ptr->image.rows > 60 && cv_ptr->image.cols > 60)
 			circle(cv_ptr->image, Point(50, 50), 10, CV_RGB(255, 0, 0));*/
 
-		// Update GUI Window
-		imshow(OPENCV_WINDOW, cv_ptr->image);
-		waitKey(3);
-
-		// Output modified video stream
-		image_pub_.publish(cv_ptr->toImageMsg());
-
 		while (ros::ok())
 		{
 			CommandLineParser parser(argc, argv,
@@ -84,30 +77,37 @@ public:
 			if (!eyes_cascade.load("/home/drawn/opencv/data/haarcascades/bike.xml")) { printf("--(!)Error loading eyes cascade\n"); return -1; };
 
 			//-- 2. Read the video stream //load the video
-			capture.open(0);
-			if (!capture.isOpened()) { printf("--(!)Error opening video capture\n"); return -1; }
+			//capture.open(0);
+			//if (!capture.isOpened()) { printf("--(!)Error opening video capture\n"); return -1; }
 
-			while (capture.read(frame))
+			/*while (capture.read(frame))
 			{
 				if (frame.empty())
 				{
 					printf(" --(!) No captured frame -- Break!");
 					break;
-				}
+				}*/
 
 				//-- 3. Apply the classifier to the frame
-				detectAndDisplay(frame);
+			detectAndDisplay(cv_ptr);
 
-				if (waitKey(10) == 27) { break; } // escape
-			}
+			if (waitKey(10) == 27) { break; } // escape
+
+		// Update GUI Window
+			imshow(OPENCV_WINDOW, cv_ptr->image);
+
+			// Output modified video stream
+			image_pub_.publish(cv_ptr->toImageMsg());
+
 			ros::spinOnce();
 			loop_rate.sleep();
+		}
 		}
 	}
 };
 
 /** Function Headers */
-void detectAndDisplay( Mat frame );
+void detectAndDisplay(cv_bridge::CvImagePtr frame );
 void msgCallback(const sensor_msgs::Image::ConstPtr& msg);
 
 /** Global variables */
@@ -169,20 +169,20 @@ int main( int argc, const char** argv )
     return 0;
 }
 
-void msgCallback(const sensor_msgs::Image::ConstPtr& msg)
+/*void msgCallback(const sensor_msgs::Image::ConstPtr& msg)
 {
 	cout << "function entered" << endl;
 	ROS_INFO("height = %d, width = %d", msg->height, msg->width);
 	//frame = msg->data;
-}
+}*/
 
 /** @function detectAndDisplay */
 void detectAndDisplay( Mat frame )
 {
     std::vector<Rect> faces;
     Mat frame_gray;
-
-    cvtColor( frame, frame_gray, COLOR_BGR2GRAY );
+	
+    cvtColor( frame->image, frame_gray, COLOR_BGR2GRAY );
     equalizeHist( frame_gray, frame_gray );
 
     //-- Detect faces
@@ -191,7 +191,7 @@ void detectAndDisplay( Mat frame )
     for ( size_t i = 0; i < faces.size(); i++ )
     {
         Point center( faces[i].x + faces[i].width/2, faces[i].y + faces[i].height/2 );
-        ellipse( frame, center, Size( faces[i].width/2, faces[i].height/2 ), 0, 0, 360, Scalar( 255, 0, 255 ), 3, 8, 0 );
+        ellipse( frame->image, center, Size( faces[i].width/2, faces[i].height/2 ), 0, 0, 360, Scalar( 255, 0, 255 ), 3, 8, 0 );
 
         Mat faceROI = frame_gray( faces[i] );
         std::vector<Rect> eyes;
@@ -203,9 +203,9 @@ void detectAndDisplay( Mat frame )
         {
             Point eye_center( faces[i].x + eyes[j].x + eyes[j].width/2, faces[i].y + eyes[j].y + eyes[j].height/2 );
             int radius = cvRound( (eyes[j].width + eyes[j].height)*0.25 );
-            circle( frame, eye_center, radius, Scalar( 255, 0, 0 ), 4, 8, 0 );
+            circle( frame->image, eye_center, radius, Scalar( 255, 0, 0 ), 4, 8, 0 );
         }
     }
     //-- Show what you got
-    imshow( window_name, frame );
+    imshow( window_name, frame->image );
 }
