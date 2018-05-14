@@ -53,9 +53,9 @@ public:
 			return;
 		}
 
-		// Draw an example circle on the video stream
+		/*// Draw an example circle on the video stream
 		if (cv_ptr->image.rows > 60 && cv_ptr->image.cols > 60)
-			circle(cv_ptr->image, Point(50, 50), 10, CV_RGB(255, 0, 0));
+			circle(cv_ptr->image, Point(50, 50), 10, CV_RGB(255, 0, 0));*/
 
 		// Update GUI Window
 		imshow(OPENCV_WINDOW, cv_ptr->image);
@@ -63,6 +63,46 @@ public:
 
 		// Output modified video stream
 		image_pub_.publish(cv_ptr->toImageMsg());
+
+		while (ros::ok())
+		{
+			CommandLineParser parser(argc, argv,
+				"{help h||}"
+				"{face_cascade|../../data/haarcascades/cars.xml|}"
+				"{eyes_cascade|../../data/haarcascades/bike.xml|}");
+
+			parser.about("\nThis program demonstrates using the cv::CascadeClassifier class to detect objects (Face + eyes) in a video stream.\n"
+				"You can use Haar or LBP features.\n\n");
+			parser.printMessage();
+
+			face_cascade_name = parser.get<String>("face_cascade");
+			eyes_cascade_name = parser.get<String>("eyes_cascade");
+			VideoCapture capture;
+
+			//-- 1. Load the cascades
+			if (!face_cascade.load("/home/drawn/opencv/data/haarcascades/cars.xml")) { printf("--(!)Error loading face cascade\n"); return -1; };
+			if (!eyes_cascade.load("/home/drawn/opencv/data/haarcascades/bike.xml")) { printf("--(!)Error loading eyes cascade\n"); return -1; };
+
+			//-- 2. Read the video stream //load the video
+			capture.open(0);
+			if (!capture.isOpened()) { printf("--(!)Error opening video capture\n"); return -1; }
+
+			while (capture.read(frame))
+			{
+				if (frame.empty())
+				{
+					printf(" --(!) No captured frame -- Break!");
+					break;
+				}
+
+				//-- 3. Apply the classifier to the frame
+				detectAndDisplay(frame);
+
+				if (waitKey(10) == 27) { break; } // escape
+			}
+			ros::spinOnce();
+			loop_rate.sleep();
+		}
 	}
 };
 
@@ -87,7 +127,7 @@ int main( int argc, const char** argv )
 
 	ImageConverter ic;
 
-	while (ros::ok())
+	/*while (ros::ok())
 	{
 		CommandLineParser parser(argc, argv,
 			"{help h||}"
@@ -125,7 +165,7 @@ int main( int argc, const char** argv )
 		}
 		ros::spinOnce();
 		loop_rate.sleep();
-	}
+	}*/
     return 0;
 }
 
