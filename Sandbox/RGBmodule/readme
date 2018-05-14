@@ -1,0 +1,6 @@
++All the files you need to compile and run are here.
+
+in the code put the directory for the cascades.
+
++g++ -ggdb carsdetect.cpp -o carsdetect `pkg-config --cflags --libs opencv` //compile
++./main //run the programm
