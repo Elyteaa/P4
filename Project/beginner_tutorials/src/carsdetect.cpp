@@ -12,55 +12,128 @@
 
 using namespace std;
 using namespace cv;
+using namespace cv_bridge;
+
+static const string OPENCV_WINDOW = "Image window";
+
+class ImageConverter
+{
+	ros::NodeHandle nh_;
+	image_transport::ImageTransport it_;
+	image_transport::Subscriber image_sub_;
+	image_transport::Publisher image_pub_;
+
+public:
+	ImageConverter()
+		: it_(nh_)
+	{
+		// Subscrive to input video feed and publish output video feed
+		image_sub_ = it_.subscribe("/camera/image_raw", 1,
+			&ImageConverter::imageCb, this);
+		image_pub_ = it_.advertise("/image_converter/output_video", 1);
+
+		namedWindow(OPENCV_WINDOW);
+	}
+
+	~ImageConverter()
+	{
+		destroyWindow(OPENCV_WINDOW);
+	}
+
+	void imageCb(const sensor_msgs::ImageConstPtr& msg)
+	{
+		cv_bridge::CvImagePtr cv_ptr;
+		try
+		{
+			cv_ptr = cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::BGR8);
+		}
+		catch (cv_bridge::Exception& e)
+		{
+			ROS_ERROR("cv_bridge exception: %s", e.what());
+			return;
+		}
+
+		// Draw an example circle on the video stream
+		if (cv_ptr->image.rows > 60 && cv_ptr->image.cols > 60)
+			circle(cv_ptr->image, Point(50, 50), 10, CV_RGB(255, 0, 0));
+
+		// Update GUI Window
+		imshow(OPENCV_WINDOW, cv_ptr->image);
+		waitKey(3);
+
+		// Output modified video stream
+		image_pub_.publish(cv_ptr->toImageMsg());
+	}
+};
 
 /** Function Headers */
 void detectAndDisplay( Mat frame );
+void msgCallback(const sensor_msgs::Image::ConstPtr& msg);
 
 /** Global variables */
 String face_cascade_name, eyes_cascade_name;
 CascadeClassifier face_cascade; //faces = cars
 CascadeClassifier eyes_cascade; //eyes = bikes
 String window_name = "Capture - Car detection";
+Mat frame;
 
 /** @function main */
 int main( int argc, const char** argv )
 {
-    CommandLineParser parser(argc, argv,
-        "{help h||}"
-        "{face_cascade|../../data/haarcascades/cars.xml|}"
-        "{eyes_cascade|../../data/haarcascades/bike.xml|}");
+	ros::init(argc, argv, "RGB_node");
+	ros::NodeHandle n;
 
-    parser.about( "\nThis program demonstrates using the cv::CascadeClassifier class to detect objects (Face + eyes) in a video stream.\n"
-                  "You can use Haar or LBP features.\n\n" );
-    parser.printMessage();
+	ros::Rate loop_rate(10);
 
-    face_cascade_name = parser.get<String>("face_cascade");
-    eyes_cascade_name = parser.get<String>("eyes_cascade");
-    VideoCapture capture;
-    Mat frame;
+	ImageConverter ic;
 
-    //-- 1. Load the cascades
-    if( !face_cascade.load( "/home/drawn/opencv/data/haarcascades/cars.xml" ) ){ printf("--(!)Error loading face cascade\n"); return -1; };
-    if( !eyes_cascade.load( "/home/drawn/opencv/data/haarcascades/bike.xml"  ) ){ printf("--(!)Error loading eyes cascade\n"); return -1; };
+	while (ros::ok())
+	{
+		CommandLineParser parser(argc, argv,
+			"{help h||}"
+			"{face_cascade|../../data/haarcascades/cars.xml|}"
+			"{eyes_cascade|../../data/haarcascades/bike.xml|}");
 
-    //-- 2. Read the video stream //load the video
-    capture.open(0);
-    if ( ! capture.isOpened() ) { printf("--(!)Error opening video capture\n"); return -1; }
+		parser.about("\nThis program demonstrates using the cv::CascadeClassifier class to detect objects (Face + eyes) in a video stream.\n"
+			"You can use Haar or LBP features.\n\n");
+		parser.printMessage();
 
-    while ( capture.read(frame) )
-    {
-        if( frame.empty() )
-        {
-            printf(" --(!) No captured frame -- Break!");
-            break;
-        }
+		face_cascade_name = parser.get<String>("face_cascade");
+		eyes_cascade_name = parser.get<String>("eyes_cascade");
+		VideoCapture capture;
 
-        //-- 3. Apply the classifier to the frame
-        detectAndDisplay( frame );
+		//-- 1. Load the cascades
+		if (!face_cascade.load("/home/drawn/opencv/data/haarcascades/cars.xml")) { printf("--(!)Error loading face cascade\n"); return -1; };
+		if (!eyes_cascade.load("/home/drawn/opencv/data/haarcascades/bike.xml")) { printf("--(!)Error loading eyes cascade\n"); return -1; };
 
-        if( waitKey(10) == 27 ) { break; } // escape
-    }
+		//-- 2. Read the video stream //load the video
+		capture.open(0);
+		if (!capture.isOpened()) { printf("--(!)Error opening video capture\n"); return -1; }
+
+		while (capture.read(frame))
+		{
+			if (frame.empty())
+			{
+				printf(" --(!) No captured frame -- Break!");
+				break;
+			}
+
+			//-- 3. Apply the classifier to the frame
+			detectAndDisplay(frame);
+
+			if (waitKey(10) == 27) { break; } // escape
+		}
+		ros::spinOnce();
+		loop_rate.sleep();
+	}
     return 0;
+}
+
+void msgCallback(const sensor_msgs::Image::ConstPtr& msg)
+{
+	cout << "function entered" << endl;
+	ROS_INFO("height = %d, width = %d", msg->height, msg->width);
+	//frame = msg->data;
 }
 
 /** @function detectAndDisplay */
