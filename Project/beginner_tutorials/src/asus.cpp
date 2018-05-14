@@ -75,7 +75,7 @@ int main(int argc, char **argv)
 					pub.publish(turtle); //message sent to the turtlebot to stop
 					}
 				}
-			} else if (distance[324] <= 1) 
+			if (distance[324] <= 1) 
 			{
 				std::cout << "There's an obstacle - " << distance[324] << std::endl;
 				turtle.data = 0;

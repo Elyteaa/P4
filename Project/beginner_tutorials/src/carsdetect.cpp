@@ -60,6 +60,7 @@ void detectAndDisplay(Mat frame)
 
 class ImageConverter
 {
+private:
 	ros::NodeHandle nh_;
 	image_transport::ImageTransport it_;
 	image_transport::Subscriber image_sub_;
@@ -86,7 +87,6 @@ public:
 
 	void imageCb(const sensor_msgs::ImageConstPtr& msg)
 	{
-		ros::Rate loop_rate(10);
 		cv_bridge::CvImagePtr cv_ptr;
 		try
 		{
@@ -98,10 +98,15 @@ public:
 			return;
 		}
 
+		ImageConverter::rgb(cv_ptr);
+
 		/*// Draw an example circle on the video stream
 		if (cv_ptr->image.rows > 60 && cv_ptr->image.cols > 60)
 			circle(cv_ptr->image, Point(50, 50), 10, CV_RGB(255, 0, 0));*/
+	};
 
+	void rgb(cv_bridge::CvImagePtr cv_ptr) {
+		ros::Rate loop_rate(10);
 		while (ros::ok())
 		{
 			CommandLineParser parser(argc2, argv2,
@@ -127,18 +132,18 @@ public:
 
 			/*while (capture.read(frame))
 			{
-				if (frame.empty())
-				{
-					printf(" --(!) No captured frame -- Break!");
-					break;
-				}*/
+			if (frame.empty())
+			{
+			printf(" --(!) No captured frame -- Break!");
+			break;
+			}*/
 
-				//-- 3. Apply the classifier to the frame
+			//-- 3. Apply the classifier to the frame
 			detectAndDisplay(cv_ptr->image);
 
 			if (waitKey(10) == 27) { break; } // escape
 
-		// Update GUI Window
+											  // Update GUI Window
 			imshow(OPENCV_WINDOW, cv_ptr->image);
 
 			// Output modified video stream
@@ -147,18 +152,19 @@ public:
 			ros::spinOnce();
 			loop_rate.sleep();
 		}
-	};
+	}
 };
 
 	//void msgCallback(const sensor_msgs::Image::ConstPtr& msg);
 
 	/** @function main */
-	int main(int argc, char **argv)
+	int main(int argc, char** argv)
 	{
 		ros::init(argc, argv, "RGB_node");
 		ros::NodeHandle n;
 
-		ImageConverter ic;
+		ImageConverter ic(n);
+		ic.imageCb();
 
 		/*while (ros::ok())
 		{
