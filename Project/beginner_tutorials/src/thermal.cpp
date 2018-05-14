@@ -60,7 +60,7 @@ while (cap.isOpened())
 
 	threshold(frame, frame, 40, 255, THRESH_BINARY);
 	medianBlur(frame, frame, 5);
-	morphologyEx(frame, frame, MORPH_OPEN, getStructuringElement(MORPH_RECT, Size(11, 11)));
+	morphologyEx(frame, frame, MORPH_OPEN, getStructuringElement(MORPH_RECT, Size(3, 3)));
 
 	vector<vector<Point> > contours;
 	vector<Vec4i> hierarchy;
@@ -86,7 +86,7 @@ while (cap.isOpened())
 	for (int i = 0; i < boundRect.size(); i++) {
 		float compare = (float)boundRect[i].width / (float)boundRect[i].height;
 		if ((0.2 <= compare) && (compare <= 0.7)) {
-			if ((boundRect[i].width >= 45) && (boundRect[i].height >= 100)) {
+			if ((boundRect[i].width >= 70) && (boundRect[i].height >= 180)) {
 				human.push_back(i);
 			}
 		}
