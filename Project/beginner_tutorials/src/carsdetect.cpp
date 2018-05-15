@@ -138,29 +138,28 @@ public:
 
 			face_cascade_name = parser.get<String>("face_cascade");
 			eyes_cascade_name = parser.get<String>("eyes_cascade");
-			VideoCapture capture;
+			//VideoCapture capture;
 
 			//-- 1. Load the cascades
 			if (!face_cascade.load("/home/drawn/opencv/data/haarcascades/cars.xml")) { printf("--(!)Error loading face cascade\n"); return -1; };
 			if (!eyes_cascade.load("/home/drawn/opencv/data/haarcascades/bike.xml")) { printf("--(!)Error loading eyes cascade\n"); return -1; };
 
 			//-- 2. Read the video stream //load the video
-			capture.open(0);
-			if (!capture.isOpened()) { printf("--(!)Error opening video capture\n"); return -1; }
+			//capture.open(0);
+			//if (!capture.isOpened()) { printf("--(!)Error opening video capture\n"); return -1; }
 
-			while (capture.read(frame))
-			{
-				if (frame.empty())
+			//while (capture.read(frame))
+			/*{
+				if (our_frame.empty())
 				{
 					printf(" --(!) No captured frame -- Break!");
 					break;
 				}
-
+				*/
 				//-- 3. Apply the classifier to the frame
-				detectAndDisplay(frame);
+			detectAndDisplay(our_frame->image);
 
-				if (waitKey(10) == 27) { break; } // escape
-			}
+			if (waitKey(10) == 27) { break; } // escape
 			ros::spinOnce();
 			loop_rate.sleep();
 		}
