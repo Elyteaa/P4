@@ -52,7 +52,7 @@ public:
 				continue;
 			}*/
 			
-			base_cmd.linear.x = base_cmd.linear.y = base_cmd.angular.z = 0;
+			//base_cmd.linear.x = base_cmd.linear.y = base_cmd.angular.z = 0;
 
 			if (turtle_move_command >= 1)
 			{

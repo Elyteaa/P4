@@ -98,14 +98,14 @@ public:
 			return;
 		}
 
-		ImageConverter::rgb(cv_ptr);
+		//ImageConverter::rgb(cv_ptr);
 
 		/*// Draw an example circle on the video stream
 		if (cv_ptr->image.rows > 60 && cv_ptr->image.cols > 60)
 			circle(cv_ptr->image, Point(50, 50), 10, CV_RGB(255, 0, 0));*/
 	};
 
-	void rgb(cv_bridge::CvImagePtr cv_ptr) {
+	void rgb() {
 		ros::Rate loop_rate(10);
 		while (ros::ok())
 		{
@@ -164,7 +164,7 @@ public:
 		ros::NodeHandle n;
 
 		ImageConverter ic(n);
-		ic.imageCb();
+		ic.rgb();
 
 		/*while (ros::ok())
 		{

@@ -59,22 +59,23 @@ int main(int argc, char **argv)
 		//for (int i = x+171; i < y; i + 2) {
 		for(int i = 0; i < 640; i++)
 		{
-			if (y!=0)
+			if (y != 0)
 			{
-				if ((i >= x+171) && (i <= y + 171))//&& (distance[i] <=2)) //if it's a range, where a human has been detected
+				if ((i >= x + 171) && (i <= y + 171))//&& (distance[i] <=2)) //if it's a range, where a human has been detected
 				{
-					min = distance[x+171];
+					min = distance[x + 171];
 					if (distance[i] < min)
 					{
 						min = distance[i];
 					}
-					if (distance[i] <=2)
+					if (distance[i] <= 2)
 					{
-					std::cout << "A human is closer than 2 meters" << std::endl;
-					turtle.data = 0;
-					pub.publish(turtle); //message sent to the turtlebot to stop
+						std::cout << "A human is closer than 2 meters" << std::endl;
+						turtle.data = 0;
+						pub.publish(turtle); //message sent to the turtlebot to stop
 					}
 				}
+			}
 			if (distance[324] <= 1) 
 			{
 				std::cout << "There's an obstacle - " << distance[324] << std::endl;
