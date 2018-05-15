@@ -161,4 +161,13 @@
 
   </include>
 
+	<!-- Asus-->
+
+	<!-- Our nodes-->
+	
+	<node name="turtlebot_move" pkg="beginner_tutorials" type="turtlebot_move" respawn="true" />
+	<node name="asus_node" pkg="beginner_tutorials" type="asus_node" respawn="true" />
+	<node name="thermal_node" pkg="beginner_tutorials" type="thermal_node" respawn="true" />
+	<node name="rgb_cam_node" pkg="beginner_tutorials" type="rgb_cam_node" respawn="true" />
+
 </launch>
