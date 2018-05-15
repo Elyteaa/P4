@@ -84,15 +84,7 @@ int main(int argc, char **argv)
 					pub.publish(turtle);
 					std::cout << "There's an obsticle closer than 1.2 meters" << std::endl;
 				}
-			}
-			/*
-			if (distance[i] <= 1) {
-				std::cout << "A human is closer than 2 meters" << std::endl;
-				turtle.data = 0;
-				pub.publish(turtle);
-				break;
-			}*/
-			else if (go)
+			if (go)
 			{
 				turtle.data = 1;
 				std::cout << "There are no obstacles within 1 m in the moving direction" << std::endl;
