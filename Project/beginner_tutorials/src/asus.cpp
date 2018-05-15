@@ -52,6 +52,7 @@ int main(int argc, char **argv)
 	while (ros::ok())
 	{
 		float min = 0.0;
+		bool go = true;
 		human_dis.data.clear();
 		//std::cout << "In the while loop before ros::ok" << std::cout;
 		//if(ros::ok()){
@@ -59,7 +60,6 @@ int main(int argc, char **argv)
 		//for (int i = x+171; i < y; i + 2) {
 		for(int i = 0; i < 640; i++)
 		{
-			bool go = true;
 			if (y != 0)
 			{
 				if ((i >= x + 171) && (i <= y + 171))//&& (distance[i] <=2)) //if it's a range, where a human has been detected
@@ -83,11 +83,12 @@ int main(int argc, char **argv)
 					turtle.data = 0;
 					pub.publish(turtle);
 					std::cout << "There's an obsticle closer than 1.2 meters" << std::endl;
+					std::cout << "Reading number: " << i << std::endl;
 				}
 			if (go)
 			{
 				turtle.data = 1;
-				std::cout << "There are no obstacles within 1 m in the moving direction" << std::endl;
+				//std::cout << "There are no obstacles within 1 m in the moving direction" << std::endl;
 				pub.publish(turtle);
 			}
 		}
