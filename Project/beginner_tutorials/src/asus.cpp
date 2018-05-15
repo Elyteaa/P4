@@ -65,11 +65,11 @@ int main(int argc, char **argv)
 				if ((i >= x + 171) && (i <= y + 171))//&& (distance[i] <=2)) //if it's a range, where a human has been detected
 				{
 					min = distance[x + 171];
-					if (distance[i] < min)
+					if ((distance[i] < min) && (distance[i] != 0))
 					{
 						min = distance[i];
 					}
-					if (distance[i] <= 2)
+					if ((distance[i] <= 2) && (distance[i] != 0))
 					{
 						std::cout << "A human is closer than 2 meters" << std::endl;
 						turtle.data = 0;
@@ -77,7 +77,7 @@ int main(int argc, char **argv)
 					}
 				}
 			}
-			if (go && (i >= 171)&&(i <= 477)&& (distance[i] <= 1.2))
+			if (go && (i >= 171)&&(i <= 477)&& (distance[i] <= 1.2) && (distance[i] != 0))
 			{
 					go = false;
 					turtle.data = 0;
