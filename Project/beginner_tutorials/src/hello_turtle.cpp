@@ -37,6 +37,7 @@ public:
 	//! Loop forever while sending drive commands based on keyboard input
 	bool driveKeyboard()
 	{
+		cout << "In the function" << endl;
 		/*std::cout << "Type a command and then press enter.  "
 			"Use '+' to move forward, 'l' to turn left, "
 			"'r' to turn right, '.' to exit.\n";*/
@@ -47,7 +48,7 @@ public:
 		geometry_msgs::Twist base_cmd;
 
 		//char cmd[50];
-		while (nh_.ok()) {
+		while (ros::ok()) {
 
 			//std::cin.getline(cmd, 50);
 			/*if (cmd[0] != 'f')
