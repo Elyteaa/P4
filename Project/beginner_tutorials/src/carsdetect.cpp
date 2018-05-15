@@ -69,7 +69,7 @@ public:
 	ImageConverter()
 		: it_(nh_)
 	{
-		// Subscrive to input video feed and publish output video feed
+		// Subscribe to input video feed and publish output video feed
 		image_sub_ = it_.subscribe("/camera/image_raw", 1,
 			&ImageConverter::imageCb, this);
 		image_pub_ = it_.advertise("/image_converter/output_video", 1);
@@ -95,23 +95,13 @@ public:
 			return;
 		}
 
-		// Draw an example circle on the video stream
-		if (cv_ptr->image.rows > 60 && cv_ptr->image.cols > 60)
-			circle(cv_ptr->image, Point(50, 50), 10, CV_RGB(255, 0, 0));
-
-		cout << "It has been read" << endl;
-
-		// Update GUI Window
-		imshow(OPENCV_WINDOW, cv_ptr->image);
 		our_frame = cv_ptr;
 		waitKey(5);
 
-		// Output modified video stream
+		// Output video stream
 		image_pub_.publish(cv_ptr->toImageMsg());
 	}
 };
-
-	//void msgCallback(const sensor_msgs::Image::ConstPtr& msg);
 
 	/** @function main */
 	int main(int argc, char** argv)
@@ -120,12 +110,10 @@ public:
 		ros::NodeHandle n;
 		ros::Rate loop_rate(10);
 
-		cout << "Class init" << endl;
 		ImageConverter ic;
 
 		while (ros::ok())
 		{
-			cout << "In the loop" << endl;
 			if (our_frame) {
 				Mat frame = our_frame->image;
 				CommandLineParser parser(argc, argv,
@@ -139,41 +127,19 @@ public:
 
 				face_cascade_name = parser.get<String>("face_cascade");
 				eyes_cascade_name = parser.get<String>("eyes_cascade");
-				//VideoCapture capture;
 
 				//-- 1. Load the cascades
 				if (!face_cascade.load("/home/drawn/opencv/data/haarcascades/cars.xml")) { printf("--(!)Error loading face cascade\n"); return -1; };
 				if (!eyes_cascade.load("/home/drawn/opencv/data/haarcascades/bike.xml")) { printf("--(!)Error loading eyes cascade\n"); return -1; };
 
-				//-- 2. Read the video stream //load the video
-				//capture.open(0);
-				//if (!capture.isOpened()) { printf("--(!)Error opening video capture\n"); return -1; }
-
-				//while (capture.read(frame))
-				/*{
-					if (our_frame.empty())
-					{
-						printf(" --(!) No captured frame -- Break!");
-						break;
-					}
-					*/
-					//-- 3. Apply the classifier to the frame
+				//-- 3. Apply the classifier to the frame
 				detectAndDisplay(frame);
 				our_frame.reset();
 			}
 
-			if (waitKey(10) == 27) { break; } // escape
+			//if (waitKey(10) == 27) { break; } // escape
 			ros::spinOnce();
 			loop_rate.sleep();
 		}
 		return 0;
 	}
-
-	/*void msgCallback(const sensor_msgs::Image::ConstPtr& msg)
-	{
-		cout << "function entered" << endl;
-		ROS_INFO("height = %d, width = %d", msg->height, msg->width);
-		//frame = msg->data;
-	}*/
-
-	/** @function detectAndDisplay */
