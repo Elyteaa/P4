@@ -63,7 +63,6 @@ public:
 				base_cmd.linear.x = 0.20;
 			} else if (turtle_move_command == 0){
 				base_cmd.linear.x = base_cmd.linear.y = base_cmd.angular.z = 0;
-				
 			}
 			/*//turn left (yaw) and drive forward at the same time
 			else if (cmd[0] == 'l') {
@@ -80,6 +79,8 @@ public:
 
 			//publish the assembled command
 			cmd_vel_pub_.publish(base_cmd);
+
+			ros::spinOnce();
 		}
 		return true;
 	}
@@ -100,5 +101,6 @@ int main(int argc, char** argv)
 
 	RobotDriver driver(nh);
 
+	cout << "The function is gonna be called" << endl;
 	driver.driveKeyboard();
 }
