@@ -3,8 +3,12 @@
 #include <ros/ros.h>
 #include <geometry_msgs/Twist.h>
 #include "std_msgs/Int32.h"
+#include <unistd.h>
+
+using namespace std;
 
 int turtle_move_command;
+unsigned int microseconds = 100;
 
 class RobotDriver
 {
@@ -37,7 +41,7 @@ public:
 			"Use '+' to move forward, 'l' to turn left, "
 			"'r' to turn right, '.' to exit.\n";*/
 
-		std::cout << "f + ENTER to move forward";
+		//std::cout << "f + ENTER to move forward";
 
 		//we will be sending commands of type "twist"
 		geometry_msgs::Twist base_cmd;
@@ -57,10 +61,9 @@ public:
 			if (turtle_move_command >= 1)
 			{
 				base_cmd.linear.x = 0.20;
-			} else if (cmd[0] == 'f') {
-				base_cmd.linear.x = 0.25;
-			} else if (cmd[0] == 0){
+			} else if (turtle_move_command == 0){
 				base_cmd.linear.x = base_cmd.linear.y = base_cmd.angular.z = 0;
+				
 			}
 			/*//turn left (yaw) and drive forward at the same time
 			else if (cmd[0] == 'l') {
@@ -73,9 +76,7 @@ public:
 				base_cmd.linear.x = 0.25;
 			}*/
 			//quit
-			else if (cmd[0] == '.') {
-				break;
-			}
+			usleep(microseconds);
 
 			//publish the assembled command
 			cmd_vel_pub_.publish(base_cmd);
@@ -87,6 +88,7 @@ public:
 void turtleMove(const std_msgs::Int32::ConstPtr& asus_msg_turtle)
 {
 	turtle_move_command = asus_msg_turtle->data;
+	cout << "The topic has been read" << endl;
 }
 
 int main(int argc, char** argv)
@@ -94,10 +96,9 @@ int main(int argc, char** argv)
 	//init the ROS node
 	ros::init(argc, argv, "robot_driver");
 	ros::NodeHandle nh;
+	ros::Subscriber cmd_status_sub = nh.subscribe("/turtleCommands", 10, turtleMove);
 
 	RobotDriver driver(nh);
-
-	ros::Subscriber cmd_status_sub = nh.subscribe("/turtleCommands", 10, turtleMove);
 
 	driver.driveKeyboard();
 }

@@ -23,6 +23,7 @@ Mat frame;
 static const string OPENCV_WINDOW = "Image window";
 int argc;
 char** argv;
+cv_bridge::CvImagePtr our_frame;
 
 /** Function Headers */
 void detectAndDisplay(Mat frame)
@@ -98,6 +99,8 @@ public:
 			return;
 		}
 
+		our_frame = cv_ptr;
+
 		//ImageConverter::rgb(cv_ptr);
 
 		/*// Draw an example circle on the video stream
@@ -139,15 +142,15 @@ public:
 			}*/
 
 			//-- 3. Apply the classifier to the frame
-			detectAndDisplay(cv_ptr->image);
+			detectAndDisplay(our_frame->image);
 
 			if (waitKey(10) == 27) { break; } // escape
 
 											  // Update GUI Window
-			imshow(OPENCV_WINDOW, cv_ptr->image);
+			imshow(OPENCV_WINDOW, our_frame->image);
 
 			// Output modified video stream
-			image_pub_.publish(cv_ptr->toImageMsg());
+			image_pub_.publish(our_frame->toImageMsg());
 
 			ros::spinOnce();
 			loop_rate.sleep();
@@ -163,7 +166,7 @@ public:
 		ros::init(argc, argv, "RGB_node");
 		ros::NodeHandle n;
 
-		ImageConverter ic(n);
+		ImageConverter ic;
 		ic.rgb();
 
 		/*while (ros::ok())
