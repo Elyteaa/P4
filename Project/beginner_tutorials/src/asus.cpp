@@ -59,6 +59,7 @@ int main(int argc, char **argv)
 		//for (int i = x+171; i < y; i + 2) {
 		for(int i = 0; i < 640; i++)
 		{
+			bool go = true;
 			if (y != 0)
 			{
 				if ((i >= x + 171) && (i <= y + 171))//&& (distance[i] <=2)) //if it's a range, where a human has been detected
@@ -76,9 +77,9 @@ int main(int argc, char **argv)
 					}
 				}
 			}
-			if ((i >= 171)&&(i <= 477)) 
+			if (go && (i >= 171)&&(i <= 477)&& (distance[i] <= 1.2))
 			{
-				if (distance[i] <= 1.2) {
+					go = false;
 					turtle.data = 0;
 					pub.publish(turtle);
 					std::cout << "There's an obsticle closer than 1.2 meters" << std::endl;
@@ -91,7 +92,7 @@ int main(int argc, char **argv)
 				pub.publish(turtle);
 				break;
 			}*/
-			else
+			else if (go)
 			{
 				turtle.data = 1;
 				std::cout << "There are no obstacles within 1 m in the moving direction" << std::endl;
