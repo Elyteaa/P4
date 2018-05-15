@@ -46,10 +46,10 @@ public:
 		//we will be sending commands of type "twist"
 		geometry_msgs::Twist base_cmd;
 
-		char cmd[50];
+		//char cmd[50];
 		while (nh_.ok()) {
 
-			std::cin.getline(cmd, 50);
+			//std::cin.getline(cmd, 50);
 			/*if (cmd[0] != 'f')
 			{
 				std::cout << "unknown command:" << cmd << "\n";
