@@ -76,11 +76,13 @@ int main(int argc, char **argv)
 					}
 				}
 			}
-			if (distance[324] <= 1) 
+			if ((i >= 171)&&(i <= 477)) 
 			{
-				std::cout << "There's an obstacle - " << distance[324] << std::endl;
-				turtle.data = 0;
-				pub.publish(turtle);
+				if (distance[i] <= 1.2) {
+					turtle.data = 0;
+					pub.publish(turtle);
+					std::cout << "There's an obsticle closer than 1.2 meters" << std::endl;
+				}
 			}
 			/*
 			if (distance[i] <= 1) {
@@ -92,7 +94,7 @@ int main(int argc, char **argv)
 			else
 			{
 				turtle.data = 1;
-				std::cout << "There are no obstacles within 1 m" << std::endl;
+				std::cout << "There are no obstacles within 1 m in the moving direction" << std::endl;
 				pub.publish(turtle);
 			}
 		}
