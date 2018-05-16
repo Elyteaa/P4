@@ -1,11 +1,14 @@
 <launch>
      
-     
-     <include file="$(find turtlebot_bringup)/launch/minimal.launch"/>
-     <include file="$(find turtlebot_navigation)/launch/gmapping_demo.launch"/>
-     <include file="$(find avt_vimba_camera)/launch/mono_camera.launch"/>
+     <include file="/opt/ros/kinetic/share/turtlebot_bringup/launch/minimal.launch"/>
+     <include file="/opt/ros/kinetic/share/turtlebot_navigation/launch/gmapping_demo.launch"/>
 
 
+     <!-- Specify your own path to the mono_camera.launch following the same pattern as above -->
+     <!-- <include file="$(find avt_vimba_camera)/launch/mono_camera.launch"/> -->
+
+
+     <!--
      <node name="turtlebot_move" pkg="beginner_tutorials" type="turtlebot_move" output="screen" >
      </node>
      
@@ -17,5 +20,5 @@
 
      <node name="rgb_cam_node" pkg="beginner_tutorials" type="rgb_cam_node" output="screen">
      </node>
-
+     -->
 <launch>
