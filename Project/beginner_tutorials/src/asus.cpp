@@ -64,6 +64,7 @@ int main(int argc, char **argv)
 	while (ros::ok())
 	{
 		float min = 0.0;
+		float min2 = 0.0;
 		bool go = true;
 		human_dis.data.clear();
 		//std::cout << "In the while loop before ros::ok" << std::cout;
@@ -89,6 +90,24 @@ int main(int argc, char **argv)
 					}
 				}
 			}
+			/*if (cars.size() != 0) {
+				for (int j = 0; j < cars.size(); j + 2) {
+					if ((i >= x + 171) && (i <= y + 171))//&& (distance[i] <=2)) //if it's a range, where a human has been detected
+					{
+						min2 = distance[cars[j] + 171];
+						if ((distance[i] < min2) && (distance[i] != 0))
+						{
+							min2 = distance[i];
+						}
+						if ((distance[i] <= 2) && (distance[i] != 0))
+						{
+							std::cout << "A human is closer than 2 meters" << std::endl;
+							turtle.data = 0;
+							pub.publish(turtle); //message sent to the turtlebot to stop
+						}
+					}
+				}
+			}*/
 			if (go && (i >= 171)&&(i <= 477)&& (distance[i] <= 1.2) && (distance[i] != 0))
 			{
 					go = false;
