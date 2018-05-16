@@ -1,4 +1,5 @@
 #include <iostream>
+#include <vector>
 #include <stdio.h>
 #include <stdlib.h>
 #include "ros/ros.h"
@@ -11,6 +12,7 @@
 
 float distance[640];
 int x, y;
+std::vector<int> cars;
 
 void sensor(const sensor_msgs::LaserScan::ConstPtr& msgs)
 {
@@ -30,6 +32,14 @@ void humans(const std_msgs::Int32MultiArray::ConstPtr& msgh)
 	//std::cout << "Values are as follows: " << x << " " << y << std::endl;
 }
 
+void carsCallback(const std_msgs::Int32MultiArray::ConstPtr& message)
+{
+	cars.clear();
+	for (int i = 0; message->data.size(); i++) {
+		cars[i] = message->data[i];
+	}
+}
+
 int main(int argc, char **argv)
 {
 	ros::init(argc,argv,"asus_camera");
@@ -37,8 +47,10 @@ int main(int argc, char **argv)
 
 	ros::Publisher pub = nh.advertise<std_msgs::Int32>("/turtleCommands", 10);
 	ros::Publisher pub2 = nh.advertise<std_msgs::Float32MultiArray>("/humanDistance", 10);
+	ros::Publisher pub3 = nh.advertise<std_msgs::Float32MultiArray>("/carsDistance", 10);
 	ros::Subscriber sub = nh.subscribe("/scan", 10, sensor);
 	ros::Subscriber sub2 = nh.subscribe("/thermalHumans", 10, humans);
+	ros::Subscriber sub3 = nh.subscribe("/rgbCars", 10, carsCallback);
 
 	std_msgs::Int32MultiArray msgh;
 	sensor_msgs::LaserScan msgs;

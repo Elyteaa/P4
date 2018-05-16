@@ -111,12 +111,6 @@ while (cap.isOpened())
 	//beginner_tutorials::thermalRect msg;
 
 	for (int j = 0; j < human.size(); j++) {
-		Scalar color1 = Scalar(255, 0, 0); //blue
-		stringstream name;
-		name << "Human. Distance: " << human_distance[1];
-		putText(frame, name.str(), Point(human_distance[0] - 10, boundRect[human[j]].y - 20), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 0, 255));
-		rectangle(frame, boundRect[human[j]].tl(), boundRect[human[j]].br(), color1, 2, 8, 0);
-
 		if (ros::ok()) {
 			std_msgs::Int32MultiArray msg;
 			msg.data.clear();
@@ -134,6 +128,12 @@ while (cap.isOpened())
 			ros::spinOnce();
 			loop_rate.sleep();
 		}
+
+		Scalar color1 = Scalar(255, 0, 0); //blue
+		stringstream name;
+		name << "Human. Distance: " << human_distance[1];
+		putText(frame, name.str(), Point(human_distance[0] - 10, boundRect[human[j]].y - 20), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 0, 255));
+		rectangle(frame, boundRect[human[j]].tl(), boundRect[human[j]].br(), color1, 2, 8, 0);
 	}
 
 	imshow("sourceimg", frame);

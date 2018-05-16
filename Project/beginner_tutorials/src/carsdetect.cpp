@@ -1,6 +1,7 @@
 #include <iostream>
 #include "ros/ros.h"
 #include "sensor_msgs/Image.h"
+#include <opencv2/opencv.hpp>
 #include "opencv2/objdetect.hpp"
 #include "opencv2/highgui.hpp"
 #include "opencv2/imgproc.hpp"
@@ -9,6 +10,9 @@
 #include <image_transport/image_transport.h>
 #include <cv_bridge/cv_bridge.h>
 #include <sensor_msgs/image_encodings.h>
+
+#include "std_msgs/Int32MultiArray.h"
+#include "std_msgs/Float32MultiArray.h"
 
 using namespace std;
 using namespace cv;
@@ -23,10 +27,21 @@ static const string OPENCV_WINDOW = "Image window";
 int argc;
 char** argv;
 cv_bridge::CvImagePtr our_frame;
+vector<float> car_distance;
+std_msgs::Int32MultiArray msg;
+
+void callbackDist(const std_msgs::Float32MultiArray::ConstPtr& msgs)
+{
+	car_distance.clear();
+	for (int i = 0; i < msgs->data.size(); i++) {
+		car_distance[i] = msgs->data[i];
+	}
+}
 
 /** Function Headers */
 void detectAndDisplay(Mat frame)
 {
+	msg.data.clear();
 	std::vector<Rect> faces;
 	Mat frame_gray;
 
@@ -38,7 +53,15 @@ void detectAndDisplay(Mat frame)
 
 	for (size_t i = 0; i < faces.size(); i++)
 	{
+		int begin = faces[i].x;
+		int bend;
+		bend = faces[i].x + faces[i].width;
+		msg.data.push_back(begin);
+		msg.data.push_back(bend);
 		Point center(faces[i].x + faces[i].width / 2, faces[i].y + faces[i].height / 2);
+		stringstream name;
+		name << "Car. Distance: " << car_distance[i + 1];
+		putText(frame, name.str(), Point(car_distance[i] - 10, faces[i].y - 20), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 0, 255));
 		ellipse(frame, center, Size(faces[i].width / 2, faces[i].height / 2), 0, 0, 360, Scalar(255, 0, 255), 3, 8, 0);
 
 		Mat faceROI = frame_gray(faces[i]);
@@ -53,6 +76,7 @@ void detectAndDisplay(Mat frame)
 			int radius = cvRound((eyes[j].width + eyes[j].height)*0.25);
 			circle(frame, eye_center, radius, Scalar(255, 0, 0), 4, 8, 0);
 		}
+		ros::spinOnce();
 	}
 	//-- Show what you got
 	imshow(window_name, frame);
@@ -110,6 +134,9 @@ public:
 		ros::NodeHandle n;
 		ros::Rate loop_rate(10);
 
+		ros::Subscriber sub = n.subscribe("/carsDistance", 10, callbackDist);
+		ros::Publisher pub = n.advertise<std_msgs::Int32MultiArray>("/rgbCars", 10);
+
 		ImageConverter ic;
 
 		while (ros::ok())
@@ -134,6 +161,7 @@ public:
 
 				//-- 3. Apply the classifier to the frame
 				detectAndDisplay(frame);
+				if (msg.data.size() != 0) { pub.publish(msg); };
 				our_frame.reset();
 			}
 
