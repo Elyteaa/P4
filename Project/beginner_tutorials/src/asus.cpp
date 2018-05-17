@@ -49,10 +49,9 @@ int main(int argc, char **argv)
 	ros::Subscriber sub2 = nh.subscribe("/thermalHumans", 10, humans);
 	ros::Subscriber sub3 = nh.subscribe("/rgbCars", 10, carsCallback);
 
-	sensor_msgs::LaserScan msgs;
-	std_msgs::Int32MultiArray msgh;
 	std_msgs::Int32 turtle;
 	std_msgs::Float32MultiArray human_dis;
+	std_msgs::Float32MultiArray car_dis;
 
 	ros::Rate loop_rate(10);
 
@@ -60,24 +59,29 @@ int main(int argc, char **argv)
 	//RGB image is in all LaserScan readings, there is a margin of missing data
 	while (ros::ok())
 	{
-		float min = 0.0;
-		float min2 = 0.0;
+		std::vector<float> min_human(1);
+		bool minHumanSet = false;
+		std::vector<float> min_cars(cars.size());
 		bool go = true;
+		std::vector<bool> minCarSet(cars.size(), false);
 		human_dis.data.clear();
+		car_dis.data.clear();
 
 		//The loop checks each laser scan for appropriote attributes
 		for(int i = 0; i < 640; i++)
 		{
 			//If there were any humans detected and the current laser scan element is within the human's position:
 			if ((y != 0) && (i >= x + 171) && (i <= y + 171))
-			{
-				//NEEDS FIXING
-				//Finding distance to the humans:
-				min = distance[x + 171];
-				if ((distance[i] < min) && (distance[i] != 0))
+			{	
+				//Setting initial minimum distance value:
+				if (!minHumanSet)
 				{
-					min = distance[i];
+					min_human[0] = distance[x + 171];
+					minHumanSet = true;
 				}
+
+				//Finding closest distance to the humans:
+				if ((distance[i] < min_human[0]) && (distance[i] != 0)){min_human[0] = distance[i];}
 				if ((distance[i] <= 2) && (distance[i] != 0))
 				{
 					std::cout << "A human is closer than 2 meters" << std::endl;
@@ -87,25 +91,22 @@ int main(int argc, char **argv)
 				}
 			}
 
-			//NEEDS FIXING
-			/*if (cars.size() != 0) {
+			//The loop calculates distance to the detected cars
+			if (cars.size() != 0) {
 				for (int j = 0; j < cars.size(); j + 2) {
-					if ((i >= x + 171) && (i <= y + 171))//&& (distance[i] <=2)) //if it's a range, where a human has been detected
+					//If a car is in the blind spot, we skip it
+					if ((cars.at(j) >= 389) && (cars.at(j) <= 1547) && (cars.at(j+1) >= 389) && (cars.at(j+1) <= 1547))
 					{
-						min2 = distance[cars[j] + 171];
-						if ((distance[i] < min2) && (distance[i] != 0))
+						if ((!minCarSet[j]) && (distance[i] != 0)) { min_cars[j] = distance[i]; }
+						if ((distance[i] <= 2.5) && (distance[i] != 0))
 						{
-							min2 = distance[i];
-						}
-						if ((distance[i] <= 2) && (distance[i] != 0))
-						{
-							std::cout << "A human is closer than 2 meters" << std::endl;
+							std::cout << "A car is closer than 2.5 meters" << std::endl;
 							turtle.data = 0;
 							pub.publish(turtle); //message sent to the turtlebot to stop
 						}
 					}
 				}
-			}*/
+			}
 
 			//Checks for obstacles withing 28 degree angle ahead; if any detected, command is sent to stop, as a result
 			//the TurtleBot will wait until the way is cleared for at least 1.2 meters ahead
@@ -124,14 +125,19 @@ int main(int argc, char **argv)
 			}
 		}
 
-		//NEEDS FIXING; THIS IS RELATED TO THE DISTANCE OF HUMANS
 		if (y != 0)
 		{
 			human_dis.data.push_back(x);
-			human_dis.data.push_back(min);
+			human_dis.data.push_back(min_human[0]);
 			pub2.publish(human_dis);
-		}
 
+			//Transfer car distances back to the RGB node
+			for (int i = 0; i < min_cars.size(); i + 2) {
+				car_dis[i] = min_cars[i];
+				car_dis[i + 1] = cars[i];
+			}
+			pub3.publish(car_dis);
+		}
 		x = 0;
 		y = 0;
 		ros::spinOnce();
