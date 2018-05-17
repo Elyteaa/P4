@@ -130,8 +130,8 @@ int main(int argc, char **argv)
 				rectangle(frame, boundRect[human[j]].tl(), boundRect[human[j]].br(), color1, 2, 8, 0);
 			}
 		}
-		imshow("Thermal blobs", frame);
 		if(frame.empty()) break;
+		imshow("Thermal blobs", frame);
 		loop_rate.sleep();
 	}
 	return 0;
