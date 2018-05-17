@@ -133,8 +133,8 @@ int main(int argc, char **argv)
 
 			//Transfer car distances back to the RGB node
 			for (int i = 0; i < min_cars.size(); i + 2) {
-				car_dis[i] = min_cars[i];
-				car_dis[i + 1] = cars[i];
+				car_dis.data.push_back(min_cars[i]);
+				car_dis.data.push_back(cars[i]);
 			}
 			pub3.publish(car_dis);
 		}

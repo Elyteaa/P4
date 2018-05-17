@@ -59,7 +59,7 @@ void detectAndDisplay(Mat frame)
 		msg.data.push_back(bend);
 		Point center(faces[i].x + faces[i].width / 2, faces[i].y + faces[i].height / 2);
 		stringstream name;
-		if (human_distance[1] == 0)
+		if (car_distance[1] == 0)
 		{
 			name << "Car. Distance: N/A";
 		}
