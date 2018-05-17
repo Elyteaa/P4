@@ -18,7 +18,6 @@ using namespace std;
 using namespace cv;
 using namespace cv_bridge;
 
-/** Global variables */
 String face_cascade_name, eyes_cascade_name;
 CascadeClassifier face_cascade; //faces = cars
 CascadeClassifier eyes_cascade; //eyes = bikes
@@ -60,8 +59,12 @@ void detectAndDisplay(Mat frame)
 		msg.data.push_back(bend);
 		Point center(faces[i].x + faces[i].width / 2, faces[i].y + faces[i].height / 2);
 		stringstream name;
-		name << "Car. Distance: " << car_distance[i + 1];
-		putText(frame, name.str(), Point(car_distance[i] - 10, faces[i].y - 20), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 0, 255));
+		if (human_distance[1] == 0)
+		{
+			name << "Car. Distance: N/A";
+		}
+		else { name << "Car. Distance: " << car_distance[i]; };
+		putText(frame, name.str(), Point(car_distance[i+1] - 10, faces[i].y - 20), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 0, 255));
 		ellipse(frame, center, Size(faces[i].width / 2, faces[i].height / 2), 0, 0, 360, Scalar(255, 0, 255), 3, 8, 0);
 
 		Mat faceROI = frame_gray(faces[i]);
@@ -127,47 +130,41 @@ public:
 	}
 };
 
-	/** @function main */
-	int main(int argc, char** argv)
+int main(int argc, char** argv)
+{
+	ros::init(argc, argv, "RGB_node");
+	ros::NodeHandle n;
+	ros::Rate loop_rate(10);
+
+	ros::Subscriber sub = n.subscribe("/carsDistance", 10, callbackDist);
+	ros::Publisher pub = n.advertise<std_msgs::Int32MultiArray>("/rgbCars", 10);
+
+	ImageConverter ic;
+
+	CommandLineParser parser(argc, argv,
+		"{help h||}"
+		"{face_cascade|../../data/haarcascades/cars.xml|}"
+		"{eyes_cascade|../../data/haarcascades/bike.xml|}");
+
+	face_cascade_name = parser.get<String>("face_cascade");
+	eyes_cascade_name = parser.get<String>("eyes_cascade");
+
+	//Load the cascades
+	if (!face_cascade.load("/home/drawn/opencv/data/haarcascades/cars.xml")) { printf("--(!)Error loading face cascade\n"); };
+	if (!eyes_cascade.load("/home/drawn/opencv/data/haarcascades/bike.xml")) { printf("--(!)Error loading eyes cascade\n"); };
+
+	while (ros::ok())
 	{
-		ros::init(argc, argv, "RGB_node");
-		ros::NodeHandle n;
-		ros::Rate loop_rate(10);
-
-		ros::Subscriber sub = n.subscribe("/carsDistance", 10, callbackDist);
-		ros::Publisher pub = n.advertise<std_msgs::Int32MultiArray>("/rgbCars", 10);
-
-		ImageConverter ic;
-
-		while (ros::ok())
-		{
-			if (our_frame) {
-				Mat frame = our_frame->image;
-				CommandLineParser parser(argc, argv,
-					"{help h||}"
-					"{face_cascade|../../data/haarcascades/cars.xml|}"
-					"{eyes_cascade|../../data/haarcascades/bike.xml|}");
-
-				parser.about("\nThis program demonstrates using the cv::CascadeClassifier class to detect objects (Face + eyes) in a video stream.\n"
-					"You can use Haar or LBP features.\n\n");
-				parser.printMessage();
-
-				face_cascade_name = parser.get<String>("face_cascade");
-				eyes_cascade_name = parser.get<String>("eyes_cascade");
-
-				//-- 1. Load the cascades
-				if (!face_cascade.load("/home/drawn/opencv/data/haarcascades/cars.xml")) { printf("--(!)Error loading face cascade\n"); return -1; };
-				if (!eyes_cascade.load("/home/drawn/opencv/data/haarcascades/bike.xml")) { printf("--(!)Error loading eyes cascade\n"); return -1; };
-
-				//-- 3. Apply the classifier to the frame
-				detectAndDisplay(frame);
-				if (msg.data.size() != 0) { pub.publish(msg); };
-				our_frame.reset();
-			}
-
-			//if (waitKey(10) == 27) { break; } // escape
-			ros::spinOnce();
-			loop_rate.sleep();
+		if (our_frame) {
+			Mat frame = our_frame->image;
+				
+			//Apply the classifier to the frame
+			detectAndDisplay(frame);
+			if (msg.data.size() != 0) { pub.publish(msg); };
+			our_frame.reset();
 		}
-		return 0;
+		ros::spinOnce();
+		loop_rate.sleep();
 	}
+	return 0;
+}
