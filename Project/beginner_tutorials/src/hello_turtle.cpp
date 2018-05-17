@@ -28,9 +28,10 @@ public:
 	bool driveTurtle()
 	{
 		//we will be sending commands to the TurtlBot of type "twist"
+
 		//stop the TurtleBot before the loop begins
-		base_cmd.linear.x = base_cmd.linear.y = base_cmd.angular.z = 0;
 		geometry_msgs::Twist base_cmd;
+		base_cmd.linear.x = base_cmd.linear.y = base_cmd.angular.z = 0;
 
 		while (ros::ok()) {
 			if (turtle_move_command >= 1)

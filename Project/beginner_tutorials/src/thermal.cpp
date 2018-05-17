@@ -12,18 +12,20 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <cmath>
-//#include "beginner_tutorials/thermalRect.h"
 
 using namespace std;
 using namespace cv;
 
-Mat frame;
+//Variables to save and compare detected human blobs between two frames
 vector<int> human;		
-vector<int> human_prev; 
-vector<Rect> temp;	    
-vector<Rect> boundRect_prev; 
+vector<int> human_prev;
+//Variables to save and compare bounding boxes of detected human blobs between two frames
+vector<Rect> boundRect;
+vector<Rect> boundRect_prev;
+//Array, saving information about detected human's starting position in the image and its distance from the sensing system
 float human_distance[2];
 
+//Function saves information from the /humanDistance topic, published by the depth sensor
 void callbackDist(const std_msgs::Float32MultiArray::ConstPtr& msgs)
 {
 	human_distance[0] = msgs->data[0];
@@ -32,56 +34,58 @@ void callbackDist(const std_msgs::Float32MultiArray::ConstPtr& msgs)
 
 int main(int argc, char **argv)
 {
-  ros::init(argc, argv, "thermal_node_cpp");
-  ros::NodeHandle n;
+	Mat frame;
+	ros::init(argc, argv, "thermal_node_cpp");
+	ros::NodeHandle n;
 
-  ros::Subscriber sub = n.subscribe("/humanDistance", 10, callbackDist);
-  ros::Publisher chatter_pub = n.advertise<std_msgs::Int32MultiArray>("/thermalHumans", 10);
+	ros::Subscriber sub = n.subscribe("/humanDistance", 10, callbackDist);
+	ros::Publisher chatter_pub = n.advertise<std_msgs::Int32MultiArray>("/thermalHumans", 10);
 
-  ros::Rate loop_rate(10);
+	ros::Rate loop_rate(10);
 
-//Capturing image form the thermal camera
-VideoCapture cap("http://169.254.228.255/mjpg/video.mjpg?");
-//VideoCapture cap(0);
-if (!cap.isOpened())
-{
+	//Capturing image form the thermal camera
+	VideoCapture cap("http://169.254.228.255/mjpg/video.mjpg?");
+
+	if (!cap.isOpened())
+	{
 	cout << "Camera not found" << endl;
 	getchar();
 	return -1;
-}
+	}
 
-while (cap.isOpened())
-{
+	while (cap.isOpened())
+	{
 	human_prev = human;
 	human.erase(human.begin(), human.end());
 		
 	cap >> frame;
+	//Initial imae processing: thresholding, applying median blur and a morphology function - opening
 	cvtColor(frame, frame, CV_BGR2GRAY); 
-
 	threshold(frame, frame, 40, 255, THRESH_BINARY);
 	medianBlur(frame, frame, 5);
 	morphologyEx(frame, frame, MORPH_OPEN, getStructuringElement(MORPH_RECT, Size(11, 11)));
 
+	//Vector to save point of the detected contours (blobs)
 	vector<vector<Point> > contours;
 	vector<Vec4i> hierarchy;
-		
 	findContours(frame, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
+	
+	//Converting the image back to colour, so that colourfull markers could be drawn
 	cvtColor(frame, frame, CV_GRAY2RGB); 
-
-	if (temp.size() > 0) {
-		boundRect_prev = temp;
+	
+	//Saving information about bounding boxes from a previous frame and preparing vector for new data
+	if (boundRect.size() > 0) {
+		boundRect_prev = boundRect;
+		boundRect.clear();
 	}
 
 	vector<vector<Point> > contours_poly(contours.size());
-	vector<Rect> boundRect(contours.size());
 
 	for (int i = 0; i < contours.size(); i++)
 	{
 		approxPolyDP(Mat(contours[i]), contours_poly[i], 3, true); 
-		boundRect[i] = boundingRect(Mat(contours_poly[i]));
+		boundRect.push_back(boundingRect(Mat(contours_poly[i])));
 	}
-
-	temp = boundRect;
 		
 	for (int i = 0; i < boundRect.size(); i++) {
 		float compare = (float)boundRect[i].width / (float)boundRect[i].height;
@@ -138,7 +142,7 @@ while (cap.isOpened())
 
 	imshow("sourceimg", frame);
 	if(frame.empty()) break;
- 	if(waitKey(30) >= 0) break;
+	if(waitKey(30) >= 0) break;
 	}
-  return 0;
+	return 0;
 }
