@@ -121,7 +121,8 @@ int main(int argc, char **argv)
 				msg.data.push_back(begin);
 				msg.data.push_back(bend);
 				chatter_pub.publish(msg);
-				//ros::spinOnce();
+				loop_rate.sleep();
+				ros::spinOnce();
 			}
 
 			stringstream name;
@@ -135,8 +136,7 @@ int main(int argc, char **argv)
 		imshow("Thermal blobs", frame);
 		waitKey(50);
 		if(frame.empty()) break;
-		ros::spinOnce();
-		loop_rate.sleep();
+		//ros::spinOnce();
 	}
 	return 0;
 }
