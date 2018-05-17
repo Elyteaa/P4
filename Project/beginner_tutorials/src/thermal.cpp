@@ -37,7 +37,7 @@ int main(int argc, char **argv)
 	Mat frame;
 	Scalar color = Scalar(0, 0, 255); //red
 	Scalar color1 = Scalar(255, 0, 0); //blue
-	stringstream name;
+	//stringstream name;
 
 	ros::init(argc, argv, "thermal_node_cpp");
 	ros::NodeHandle n;
@@ -113,8 +113,7 @@ int main(int argc, char **argv)
 		//Send positions of detected humans to the Asus sensor, so that it can estimate distance to them
 		for (int j = 0; j < human.size(); j++)
 		{
-			if (ros::ok())
-			{
+			if (ros::ok()) {
 				std_msgs::Int32MultiArray msg;
 				msg.data.clear();
 				int begin = boundRect[human[j]].x;
@@ -122,16 +121,21 @@ int main(int argc, char **argv)
 				msg.data.push_back(begin);
 				msg.data.push_back(bend);
 				chatter_pub.publish(msg);
-				ros::spinOnce();
-
-				name.clear();
-				name << "Human. Distance: " << human_distance[1];
-				putText(frame, name.str(), Point(human_distance[0] - 10, boundRect[human[j]].y - 20), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 0, 255));
-				rectangle(frame, boundRect[human[j]].tl(), boundRect[human[j]].br(), color1, 2, 8, 0);
+				//ros::spinOnce();
 			}
+
+			stringstream name;
+			if (human_distance[1] == 0)
+			{
+				name << "Human. Distance: N/A";
+			} else {name << "Human. Distance: " << human_distance[1];};
+			putText(frame, name.str(), Point(human_distance[0] - 10, boundRect[human[j]].y - 20), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 0, 255));
+			rectangle(frame, boundRect[human[j]].tl(), boundRect[human[j]].br(), color1, 2, 8, 0);
 		}
-		if(frame.empty()) break;
 		imshow("Thermal blobs", frame);
+		waitKey(50);
+		if(frame.empty()) break;
+		ros::spinOnce();
 		loop_rate.sleep();
 	}
 	return 0;
