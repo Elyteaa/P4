@@ -110,7 +110,6 @@ int main(int argc, char **argv)
 		}
 	}
 
-	//NEEDS FIXING HAS TO SEND AN ARRAY OF ALL THE HUMANS, NOT JUST ONE; COMPARE TO THE CARSDETECT.CPP
 	//Send positions of detected humans to the Asus sensor, so that it can estimate distance to them
 	for (int j = 0; j < human.size(); j++)
 	{
@@ -123,13 +122,13 @@ int main(int argc, char **argv)
 			msg.data.push_back(bend);
 			chatter_pub.publish(msg);
 			ros::spinOnce();
-			loop_rate.sleep();
 		}
 
 		name.clear();
 		name << "Human. Distance: " << human_distance[1];
 		putText(frame, name.str(), Point(human_distance[0] - 10, boundRect[human[j]].y - 20), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 0, 255));
 		rectangle(frame, boundRect[human[j]].tl(), boundRect[human[j]].br(), color1, 2, 8, 0);
+		loop_rate.sleep();
 	}
 
 	imshow("Thermal blobs", frame);
