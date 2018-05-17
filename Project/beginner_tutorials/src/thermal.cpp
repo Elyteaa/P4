@@ -59,81 +59,79 @@ int main(int argc, char **argv)
 
 	while (cap.isOpened())
 	{
-	human_prev = human;
-	human.erase(human.begin(), human.end());
+		human_prev = human;
+		human.erase(human.begin(), human.end());
 		
-	cap >> frame;
-	//Initial imae processing: thresholding, applying median blur and a morphology function - opening
-	cvtColor(frame, frame, CV_BGR2GRAY); 
-	threshold(frame, frame, 40, 255, THRESH_BINARY);
-	medianBlur(frame, frame, 5);
-	morphologyEx(frame, frame, MORPH_OPEN, getStructuringElement(MORPH_RECT, Size(11, 11)));
+		cap >> frame;
+		//Initial imae processing: thresholding, applying median blur and a morphology function - opening
+		cvtColor(frame, frame, CV_BGR2GRAY); 
+		threshold(frame, frame, 40, 255, THRESH_BINARY);
+		medianBlur(frame, frame, 5);
+		morphologyEx(frame, frame, MORPH_OPEN, getStructuringElement(MORPH_RECT, Size(11, 11)));
 
-	//Vector to save point of the detected contours (blobs)
-	vector<vector<Point> > contours;
-	vector<Vec4i> hierarchy;
-	findContours(frame, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
+		//Vector to save point of the detected contours (blobs)
+		vector<vector<Point> > contours;
+		vector<Vec4i> hierarchy;
+		findContours(frame, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
 	
-	//Converting the image back to colour, so that colourfull markers could be drawn
-	cvtColor(frame, frame, CV_GRAY2RGB); 
+		//Converting the image back to colour, so that colourfull markers could be drawn
+		cvtColor(frame, frame, CV_GRAY2RGB); 
 	
-	//Saving information about bounding boxes from a previous frame and preparing vector for new data
-	if (boundRect.size() > 0) {
-		boundRect_prev = boundRect;
-		boundRect.clear();
-	}
-
-	vector<vector<Point> > contours_poly(contours.size());
-
-	//The loop creates bounding boxes for the detected blobs and checks for human-like qualities, such as
-	//appropriate bounding box ratio and minimal pixel value, as well as draws the contours
-	for (int i = 0; i < contours.size(); i++)
-	{
-		approxPolyDP(Mat(contours[i]), contours_poly[i], 3, true); 
-		boundRect.push_back(boundingRect(Mat(contours_poly[i])));
-		float compare = (float)boundRect[i].width / (float)boundRect[i].height;
-		if ((0.2 <= compare) && (compare <= 0.7) && (boundRect[i].width >= 45) && (boundRect[i].height >= 100)) {
-			human.push_back(i);
+		//Saving information about bounding boxes from a previous frame and preparing vector for new data
+		if (boundRect.size() > 0) {
+			boundRect_prev = boundRect;
+			boundRect.clear();
 		}
-		drawContours(frame, contours, i, color, 2, 8, hierarchy, 0, Point());
-	}
 
-	//The loop tries to find humans, identified in a previous frame, which may have gotten further/closer from
-	//the sensing system
-	for (int n = 0; n < human_prev.size(); n++) {
-		for (int i = 0; i < boundRect.size(); i++) {
-			float compare = (float)boundRect[i].width / (float)boundRect_prev[human_prev.at(n)].width;
-			float compare2 = (float)boundRect[i].height / (float)boundRect_prev[human_prev.at(n)].height;
-			if ((0.8 <= compare) && (compare <= 1.5) && (0.8 <= compare2) && (compare2 <= 1.5)) {
+		vector<vector<Point> > contours_poly(contours.size());
+
+		//The loop creates bounding boxes for the detected blobs and checks for human-like qualities, such as
+		//appropriate bounding box ratio and minimal pixel value, as well as draws the contours
+		for (int i = 0; i < contours.size(); i++)
+		{
+			approxPolyDP(Mat(contours[i]), contours_poly[i], 3, true); 
+			boundRect.push_back(boundingRect(Mat(contours_poly[i])));
+			float compare = (float)boundRect[i].width / (float)boundRect[i].height;
+			if ((0.2 <= compare) && (compare <= 0.7) && (boundRect[i].width >= 45) && (boundRect[i].height >= 100)) {
 				human.push_back(i);
 			}
-		}
-	}
-
-	//Send positions of detected humans to the Asus sensor, so that it can estimate distance to them
-	for (int j = 0; j < human.size(); j++)
-	{
-		if (ros::ok()) {
-			std_msgs::Int32MultiArray msg;
-			msg.data.clear();
-			int begin = boundRect[human[j]].x;
-			int bend = boundRect[human[j]].x + boundRect[human[j]].width;
-			msg.data.push_back(begin);
-			msg.data.push_back(bend);
-			chatter_pub.publish(msg);
-			ros::spinOnce();
+			drawContours(frame, contours, i, color, 2, 8, hierarchy, 0, Point());
 		}
 
-		name.clear();
-		name << "Human. Distance: " << human_distance[1];
-		putText(frame, name.str(), Point(human_distance[0] - 10, boundRect[human[j]].y - 20), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 0, 255));
-		rectangle(frame, boundRect[human[j]].tl(), boundRect[human[j]].br(), color1, 2, 8, 0);
+		//The loop tries to find humans, identified in a previous frame, which may have gotten further/closer from
+		//the sensing system
+		for (int n = 0; n < human_prev.size(); n++) {
+			for (int i = 0; i < boundRect.size(); i++) {
+				float compare = (float)boundRect[i].width / (float)boundRect_prev[human_prev.at(n)].width;
+				float compare2 = (float)boundRect[i].height / (float)boundRect_prev[human_prev.at(n)].height;
+				if ((0.8 <= compare) && (compare <= 1.5) && (0.8 <= compare2) && (compare2 <= 1.5)) {
+					human.push_back(i);
+				}
+			}
+		}
+
+		//Send positions of detected humans to the Asus sensor, so that it can estimate distance to them
+		for (int j = 0; j < human.size(); j++)
+		{
+			if (ros::ok()) {
+				std_msgs::Int32MultiArray msg;
+				msg.data.clear();
+				int begin = boundRect[human[j]].x;
+				int bend = boundRect[human[j]].x + boundRect[human[j]].width;
+				msg.data.push_back(begin);
+				msg.data.push_back(bend);
+				chatter_pub.publish(msg);
+				ros::spinOnce();
+			}
+
+			name.clear();
+			name << "Human. Distance: " << human_distance[1];
+			putText(frame, name.str(), Point(human_distance[0] - 10, boundRect[human[j]].y - 20), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 0, 255));
+			rectangle(frame, boundRect[human[j]].tl(), boundRect[human[j]].br(), color1, 2, 8, 0);
+		}
+		imshow("Thermal blobs", frame);
+		if(frame.empty()) break;
 		loop_rate.sleep();
-	}
-
-	imshow("Thermal blobs", frame);
-	if(frame.empty()) break;
-	waitKey(10);
 	}
 	return 0;
 }
