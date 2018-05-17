@@ -87,7 +87,7 @@ int main(int argc, char **argv)
 
 		//The loop creates bounding boxes for the detected blobs and checks for human-like qualities, such as
 		//appropriate bounding box ratio and minimal pixel value, as well as draws the contours
-		for (int i = 0; i < contours.size(); i++)
+		for (int i = 0; i < contours.size(); i=hierarchy[i][0])
 		{
 			approxPolyDP(Mat(contours[i]), contours_poly[i], 3, true); 
 			boundRect.push_back(boundingRect(Mat(contours_poly[i])));
