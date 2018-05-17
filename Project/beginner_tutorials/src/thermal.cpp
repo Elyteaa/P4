@@ -35,6 +35,10 @@ void callbackDist(const std_msgs::Float32MultiArray::ConstPtr& msgs)
 int main(int argc, char **argv)
 {
 	Mat frame;
+	Scalar color = Scalar(0, 0, 255); //red
+	Scalar color1 = Scalar(255, 0, 0); //blue
+	stringstream name;
+
 	ros::init(argc, argv, "thermal_node_cpp");
 	ros::NodeHandle n;
 
@@ -81,21 +85,21 @@ int main(int argc, char **argv)
 
 	vector<vector<Point> > contours_poly(contours.size());
 
+	//The loop creates bounding boxes for the detected blobs and checks for human-like qualities, such as
+	//appropriate bounding box ratio and minimal pixel value, as well as draws the contours
 	for (int i = 0; i < contours.size(); i++)
 	{
 		approxPolyDP(Mat(contours[i]), contours_poly[i], 3, true); 
 		boundRect.push_back(boundingRect(Mat(contours_poly[i])));
-	}
-		
-	for (int i = 0; i < boundRect.size(); i++) {
 		float compare = (float)boundRect[i].width / (float)boundRect[i].height;
-		if ((0.2 <= compare) && (compare <= 0.7)) {
-			if ((boundRect[i].width >= 45) && (boundRect[i].height >= 100)) {
-				human.push_back(i);
-			}
+		if ((0.2 <= compare) && (compare <= 0.7) && (boundRect[i].width >= 45) && (boundRect[i].height >= 100)) {
+			human.push_back(i);
 		}
+		drawContours(frame, contours, i, color, 2, 8, hierarchy, 0, Point());
 	}
 
+	//The loop tries to find humans, identified in a previous frame, which may have gotten further/closer from
+	//the sensing system
 	for (int n = 0; n < human_prev.size(); n++) {
 		for (int i = 0; i < boundRect.size(); i++) {
 			float compare = (float)boundRect[i].width / (float)boundRect_prev[human_prev.at(n)].width;
@@ -106,43 +110,31 @@ int main(int argc, char **argv)
 		}
 	}
 
-	for (int i = 0; i < contours.size(); i++) 
+	//NEEDS FIXING HAS TO SEND AN ARRAY OF ALL THE HUMANS, NOT JUST ONE; COMPARE TO THE CARSDETECT.CPP
+	//Send positions of detected humans to the Asus sensor, so that it can estimate distance to them
+	for (int j = 0; j < human.size(); j++)
 	{
-		Scalar color = Scalar(0, 0, 255); 
-		drawContours(frame, contours, i, color, 2, 8, hierarchy, 0, Point());
-	}
-
-	//beginner_tutorials::thermalRect msg;
-
-	for (int j = 0; j < human.size(); j++) {
 		if (ros::ok()) {
 			std_msgs::Int32MultiArray msg;
 			msg.data.clear();
-			//std_msgs::Int32 msg2;
 			int begin = boundRect[human[j]].x;
-			int bend;
-			bend = boundRect[human[j]].x + boundRect[human[j]].width;
-			//cout << begin << " " << bend << endl;
+			int bend = boundRect[human[j]].x + boundRect[human[j]].width;
 			msg.data.push_back(begin);
 			msg.data.push_back(bend);
-			//msg2.data = bend;
-			//msg.data = [begin, end];
 			chatter_pub.publish(msg);
-			//chatter_pub.publish(msg2);
 			ros::spinOnce();
 			loop_rate.sleep();
 		}
 
-		Scalar color1 = Scalar(255, 0, 0); //blue
-		stringstream name;
+		name.clear();
 		name << "Human. Distance: " << human_distance[1];
 		putText(frame, name.str(), Point(human_distance[0] - 10, boundRect[human[j]].y - 20), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 0, 255));
 		rectangle(frame, boundRect[human[j]].tl(), boundRect[human[j]].br(), color1, 2, 8, 0);
 	}
 
-	imshow("sourceimg", frame);
+	imshow("Thermal blobs", frame);
 	if(frame.empty()) break;
-	if(waitKey(30) >= 0) break;
+	waitKey(10);
 	}
 	return 0;
 }
