@@ -113,7 +113,8 @@ int main(int argc, char **argv)
 		//Send positions of detected humans to the Asus sensor, so that it can estimate distance to them
 		for (int j = 0; j < human.size(); j++)
 		{
-			if (ros::ok()) {
+			if (ros::ok())
+			{
 				std_msgs::Int32MultiArray msg;
 				msg.data.clear();
 				int begin = boundRect[human[j]].x;
@@ -122,12 +123,12 @@ int main(int argc, char **argv)
 				msg.data.push_back(bend);
 				chatter_pub.publish(msg);
 				ros::spinOnce();
-			}
 
-			name.clear();
-			name << "Human. Distance: " << human_distance[1];
-			putText(frame, name.str(), Point(human_distance[0] - 10, boundRect[human[j]].y - 20), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 0, 255));
-			rectangle(frame, boundRect[human[j]].tl(), boundRect[human[j]].br(), color1, 2, 8, 0);
+				name.clear();
+				name << "Human. Distance: " << human_distance[1];
+				putText(frame, name.str(), Point(human_distance[0] - 10, boundRect[human[j]].y - 20), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 0, 255));
+				rectangle(frame, boundRect[human[j]].tl(), boundRect[human[j]].br(), color1, 2, 8, 0);
+			}
 		}
 		imshow("Thermal blobs", frame);
 		if(frame.empty()) break;
