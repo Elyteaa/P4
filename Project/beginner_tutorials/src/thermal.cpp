@@ -124,7 +124,6 @@ int main(int argc, char **argv)
 				loop_rate.sleep();
 				ros::spinOnce();
 			}
-
 			stringstream name;
 			if (human_distance[1] == 0)
 			{

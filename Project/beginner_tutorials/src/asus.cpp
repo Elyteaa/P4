@@ -96,14 +96,13 @@ int main(int argc, char **argv)
 				for (int j = 0; j < cars.size(); j + 2) {
 					//If a car is in the blind spot, we skip it
 					if ((cars.at(j) >= 389) && (cars.at(j) <= 1547) && (cars.at(j+1) >= 389) && (cars.at(j+1) <= 1547))
+					{if ((!minCarSet[j]) && (distance[i] != 0)) { min_cars[j] = distance[i]; }
+					if ((distance[i] <= 2.5) && (distance[i] != 0))
 					{
-						if ((!minCarSet[j]) && (distance[i] != 0)) { min_cars[j] = distance[i]; }
-						if ((distance[i] <= 2.5) && (distance[i] != 0))
-						{
-							std::cout << "A car is closer than 2.5 meters" << std::endl;
-							turtle.data = 0;
-							pub.publish(turtle); //message sent to the turtlebot to stop
-						}
+						std::cout << "A car is closer than 2.5 meters" << std::endl;
+						turtle.data = 0;
+						pub.publish(turtle); //message sent to the turtlebot to stop
+					}
 					}
 				}
 			}
