@@ -133,8 +133,8 @@ int main(int argc, char **argv)
 			rectangle(frame, boundRect[human[j]].tl(), boundRect[human[j]].br(), color1, 2, 8, 0);
 		}
 		imshow("Thermal blobs", frame);
-		waitKey(50);
-		if(frame.empty()) break;
+		if (frame.empty()) break;
+		if (waitKey(10) >= 0) break;
 		//ros::spinOnce();
 	}
 	return 0;
