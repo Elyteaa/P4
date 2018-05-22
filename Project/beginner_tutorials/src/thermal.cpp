@@ -13,6 +13,8 @@
 #include <stdlib.h>
 #include <cmath>
 
+#include <time.h> //for testing speed
+
 using namespace std;
 using namespace cv;
 
@@ -37,6 +39,7 @@ void callbackDist(const std_msgs::Float32MultiArray::ConstPtr& msgs)
 
 int main(int argc, char **argv)
 {
+	clock_t start, end; //for testing
 	Mat frame;
 	Scalar color = Scalar(0, 0, 255); //red
 	Scalar color1 = Scalar(255, 0, 0); //blue
@@ -63,6 +66,7 @@ int main(int argc, char **argv)
 
 	while (cap.isOpened())
 	{
+		start = clock();
 		human_prev = human;
 		human.erase(human.begin(), human.end());
 		
@@ -150,6 +154,8 @@ int main(int argc, char **argv)
 
 		imshow("Thermal blobs", frame);
 		if (frame.empty()) break;
+		end = clock();
+		std::cout << "Time required for execution: " << (double)(end - start) / CLOCKS_PER_SEC << " seconds." << std::endl;
 		if (waitKey(10) >= 0) break;
 	}
 	return 0;

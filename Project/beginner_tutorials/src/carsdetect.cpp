@@ -14,6 +14,8 @@
 #include "std_msgs/Int32MultiArray.h"
 #include "std_msgs/Float32MultiArray.h"
 
+#include <time.h> //for testing speed
+
 using namespace std;
 using namespace cv;
 using namespace cv_bridge;
@@ -150,6 +152,8 @@ int main(int argc, char** argv)
 
 	ImageConverter ic;
 
+	clock_t start, end; //for testing
+
 	CommandLineParser parser(argc, argv,
 		"{help h||}"
 		"{face_cascade|../../data/haarcascades/cars.xml|}"
@@ -164,6 +168,7 @@ int main(int argc, char** argv)
 
 	while (ros::ok())
 	{
+		start = clock();
 		if (our_frame) {
 			Mat frame = our_frame->image;
 				
@@ -178,6 +183,8 @@ int main(int argc, char** argv)
 
 			our_frame.reset();
 		}
+		end = clock();
+		std::cout << "Time required for execution: " << (double)(end - start) / CLOCKS_PER_SEC << " seconds." << std::endl;
 		
 	}
 	return 0;
