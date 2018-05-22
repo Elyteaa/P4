@@ -28,6 +28,8 @@ char** argv;
 cv_bridge::CvImagePtr our_frame;
 vector<float> car_distance;
 std_msgs::Int32MultiArray msg;
+std::vector<Rect> faces;
+Mat frame_gray;
 
 void callbackDist(const std_msgs::Float32MultiArray::ConstPtr& msgs)
 {
@@ -38,11 +40,9 @@ void callbackDist(const std_msgs::Float32MultiArray::ConstPtr& msgs)
 }
 
 /** Function Headers */
-void detectAndDisplay(Mat frame)
+void detect(Mat frame)
 {
 	msg.data.clear();
-	std::vector<Rect> faces;
-	Mat frame_gray;
 
 	cvtColor(frame, frame_gray, COLOR_BGR2GRAY);
 	equalizeHist(frame_gray, frame_gray);
@@ -50,22 +50,32 @@ void detectAndDisplay(Mat frame)
 	//-- Detect faces
 	face_cascade.detectMultiScale(frame_gray, faces, 1.1, 2, 0 | CASCADE_SCALE_IMAGE, Size(60, 60));
 
-	for (size_t i = 0; i < faces.size(); i++)
+	for (int i = 0; i < faces.size(); i++)
 	{
-		int begin = faces[i].x;
-		int bend;
-		bend = faces[i].x + faces[i].width;
-		msg.data.push_back(begin);
-		msg.data.push_back(bend);
-		Point center(faces[i].x + faces[i].width / 2, faces[i].y + faces[i].height / 2);
+		if (ros::ok)
+		{
+			int begin = faces[i].x;
+			int bend = faces[i].x + faces[i].width;
+			msg.data.push_back(begin);
+			msg.data.push_back(bend);
+		}
+	}
+}
+
+void display(Mat frame)
+{
+	int temp = 0;
+	for (int i = 0; i < car_distance.size(); i + 2)
+	{
 		stringstream name;
 		if (car_distance[1] == 0)
 		{
 			name << "Car. Distance: N/A";
 		}
 		else { name << "Car. Distance: " << car_distance[i]; };
-		putText(frame, name.str(), Point(car_distance[i+1] - 10, faces[i].y - 20), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 0, 255));
-		ellipse(frame, center, Size(faces[i].width / 2, faces[i].height / 2), 0, 0, 360, Scalar(255, 0, 255), 3, 8, 0);
+		putText(frame, name.str(), Point(car_distance[i + 1] - 10, msg.data[i + 1] -20), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 0, 255));
+		Point center(faces[temp].x + faces[temp].width / 2, faces[temp].y + faces[temp].height / 2);
+		ellipse(frame, center, Size(faces[temp].width / 2, faces[temp].height / 2), 0, 0, 360, Scalar(255, 0, 255), 3, 8, 0);
 
 		Mat faceROI = frame_gray(faces[i]);
 		std::vector<Rect> eyes;
@@ -79,7 +89,6 @@ void detectAndDisplay(Mat frame)
 			int radius = cvRound((eyes[j].width + eyes[j].height)*0.25);
 			circle(frame, eye_center, radius, Scalar(255, 0, 0), 4, 8, 0);
 		}
-		ros::spinOnce();
 	}
 	//-- Show what you got
 	imshow(window_name, frame);
@@ -159,12 +168,17 @@ int main(int argc, char** argv)
 			Mat frame = our_frame->image;
 				
 			//Apply the classifier to the frame
-			detectAndDisplay(frame);
+			detect(frame);
+
 			if (msg.data.size() != 0) { pub.publish(msg); };
+			loop_rate.sleep();
+			ros::spinOnce();
+
+			display(frame);
+
 			our_frame.reset();
 		}
-		ros::spinOnce();
-		loop_rate.sleep();
+		
 	}
 	return 0;
 }

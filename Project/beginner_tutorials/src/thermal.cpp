@@ -120,7 +120,8 @@ int main(int argc, char **argv)
 		//Send positions of detected humans to the Asus sensor, so that it can estimate distance to them
 		for (int j = 0; j < human.size(); j++)
 		{
-			if (ros::ok()) {
+			if (ros::ok())
+			{
 				int begin = boundRect[human[j]].x;
 				int bend = boundRect[human[j]].x + boundRect[human[j]].width;
 				msg.data.push_back(begin);

@@ -79,9 +79,10 @@ int main(int argc, char **argv)
 			{	
 				for (int h = 0; h < humans.size(); h + 2)
 				{
-					if ((i >= humans[h] + 171) && (i <= humans[h + 1] + 171)) {
+					if ((i >= humans[h] + 171) && (i <= humans[h + 1] + 171))
+					{
 						//Setting initial minimum distance value:
-						if (!minHumanSet[h])
+						if ((!minHumanSet[h]) && (distance[i] != 0))
 						{
 							min_human[h] = distance[humans[h] + 171];
 							minHumanSet[h] = true;
@@ -90,6 +91,7 @@ int main(int argc, char **argv)
 						
 						//Finding closest distance to the humans:
 						if ((distance[i] < min_human[h]) && (distance[i] != 0)) { min_human[h] = distance[i]; }
+
 						if ((distance[i] <= 2) && (distance[i] != 0))
 						{
 							std::cout << "A human is closer than 2 meters" << std::endl;
@@ -103,16 +105,26 @@ int main(int argc, char **argv)
 
 			//The loop calculates distance to the detected cars
 			if (cars.size() != 0) {
-				for (int j = 0; j < cars.size(); j + 2) {
+				for (int h = 0; h < cars.size(); h + 2) {
 					//If a car is in the blind spot, we skip it
-					if ((cars.at(j) >= 389) && (cars.at(j) <= 1547) && (cars.at(j+1) >= 389) && (cars.at(j+1) <= 1547))
-					{if ((!minCarSet[j]) && (distance[i] != 0)) { min_cars[j] = distance[i]; }
-					if ((distance[i] <= 2.5) && (distance[i] != 0))
+					if ((cars[h] >= 389) && (cars[h] <= 1547) && (cars[h + 1] >= 389) && (cars[h + 1] <= 1547))
 					{
+						if ((!minCarSet[h]) && (distance[i] != 0))
+						{
+							min_cars[h] = distance[i];
+							minCarSet[h] = true;
+							min_cars[h + 1] = cars[h];
+						}
+
+						//Finding closest distance to the cars:
+						if ((distance[i] < min_cars[h]) && (distance[i] != 0)) { min_cars[h] = distance[i]; }
+
+						if ((distance[i] <= 2.5) && (distance[i] != 0))
+						{
 						std::cout << "A car is closer than 2.5 meters" << std::endl;
 						turtle.data = 0;
 						pub.publish(turtle); //message sent to the turtlebot to stop
-					}
+						}
 					}
 				}
 			}
@@ -143,12 +155,14 @@ int main(int argc, char **argv)
 			pub2.publish(human_dis);
 		}
 
-		//Transfer car distances back to the RGB node
-		for (int l = 0; l < min_cars.size(); l + 2) {
-			car_dis.data.push_back(min_cars[l]);
-			car_dis.data.push_back(cars[l]);
+		if (cars.size() != 0)
+		{
+			for (int l = 0; l < min_cars.size(); l++)
+			{
+				car_dis.data.push_back(min_cars[l]);
+			}
+			pub3.publish(car_dis);
 		}
-		pub3.publish(car_dis);
 
 		ros::spinOnce();
 		loop_rate.sleep();
