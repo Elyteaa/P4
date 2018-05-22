@@ -150,6 +150,11 @@ int main(int argc, char **argv)
 	imshow("Thermal blobs", frame);
 		waitKey(50);
 		if(frame.empty()) break;
+
+		imshow("Thermal blobs", frame);
+		if (frame.empty()) break;
+		if (waitKey(10) >= 0) break;
+		//ros::spinOnce();
 	}
 	return 0;
 }
