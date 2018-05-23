@@ -68,7 +68,8 @@ int main(int argc, char **argv)
 	{
 		start = clock();
 		human_prev = human;
-		human.erase(human.begin(), human.end());
+		human.clear();
+		msg.data.clear();
 		
 		cap >> frame;
 		//Initial imae processing: thresholding, applying median blur and a morphology function - opening
@@ -119,7 +120,6 @@ int main(int argc, char **argv)
 			}
 		}
 
-		msg.data.clear();
 		vector <int> tempBoundRectIndex;
 		//Send positions of detected humans to the Asus sensor, so that it can estimate distance to them
 		for (int j = 0; j < human.size(); j++)
