@@ -30,7 +30,7 @@ float human_distance;
 //Function saves information from the /humanDistance topic, published by the depth sensor
 void callbackDist(const std_msgs::Float32::ConstPtr& msgs)
 {
-	human_distance = msgs->data[0];
+	human_distance = msgs->data;
 }
 
 int main(int argc, char **argv)
@@ -115,6 +115,7 @@ int main(int argc, char **argv)
 			}
 		}
 
+		int beg;
 		sort( human.begin(), human.end() );
 		human.erase(unique(human.begin(), human.end()), human.end());
 		//Send positions of detected humans to the Asus sensor, so that it can estimate distance to them
@@ -125,7 +126,7 @@ int main(int argc, char **argv)
 			{
 				std_msgs::Int32MultiArray msg;
 				msg.data.clear();
-				int begin = boundRect[human[j]].x;
+				beg = boundRect[human[j]].x;
 				int bend = boundRect[human[j]].x + boundRect[human[j]].width;
 				msg.data.push_back(begin);
 				msg.data.push_back(bend);
@@ -141,9 +142,9 @@ int main(int argc, char **argv)
 				name << "Human. Distance: " << human_distance;
 				
 			} else {name << "Human. Distance: N/A";}
-			std::cout << "Distance, " << human_distance << " " << begin << std::endl;
+			std::cout << "Distance, " << human_distance << " " << beg << std::endl;
 			if(boundRect[human[j]].height >= 120 && boundRect[human[j]].width >= 70){
-			putText(frame, name.str(), Point(begin - 10, boundRect[human[j]].y - 20), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 0, 255));
+			putText(frame, name.str(), Point(beg - 10, boundRect[human[j]].y - 20), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 0, 255));
 			rectangle(frame, boundRect[human[j]].tl(), boundRect[human[j]].br(), color1, 2, 8, 0);
 			}
 		}
