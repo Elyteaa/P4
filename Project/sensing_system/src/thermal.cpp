@@ -128,7 +128,7 @@ int main(int argc, char **argv)
 				msg.data.clear();
 				beg = boundRect[human[j]].x;
 				int bend = boundRect[human[j]].x + boundRect[human[j]].width;
-				msg.data.push_back(begin);
+				msg.data.push_back(beg);
 				msg.data.push_back(bend);
 				chatter_pub.publish(msg);
 				loop_rate.sleep();
