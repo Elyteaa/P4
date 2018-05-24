@@ -28,17 +28,15 @@ static const string OPENCV_WINDOW = "Image window";
 int argc;
 char** argv;
 cv_bridge::CvImagePtr our_frame;
-vector<float> car_distance;
+float car_distance[2];
 std_msgs::Int32MultiArray msg;
 std::vector<Rect> faces;
 Mat frame_gray;
 
 void callbackDist(const std_msgs::Float32MultiArray::ConstPtr& msgs)
 {
-	car_distance.clear();
-	for (int i = 0; i < msgs->data.size(); i++) {
-		car_distance[i] = msgs->data[i];
-	}
+	car_distance[0] = msgs->data[0];
+	car_distance[1] = msgs->data[1];
 }
 
 /** Function Headers */
@@ -175,11 +173,15 @@ int main(int argc, char** argv)
 			//Apply the classifier to the frame
 			detect(frame);
 
-			if (msg.data.size() != 0) { pub.publish(msg); };
-			loop_rate.sleep();
-			ros::spinOnce();
+			if (msg.data.size() != 0)
+			{
+				pub.publish(msg);
 
-			display(frame);
+				loop_rate.sleep();
+				ros::spinOnce();
+
+				display(frame);
+			}
 
 			our_frame.reset();
 		}

@@ -134,7 +134,9 @@ int main(int argc, char **argv)
 				loop_rate.sleep();
 				ros::spinOnce();
 			}
+
 			stringstream name;
+
 			if (human_distance[1] > 0)
 			{
 				name << "Human. Distance: " << human_distance[1];
@@ -144,7 +146,8 @@ int main(int argc, char **argv)
 			if(boundRect[human[j]].height >= 120 && boundRect[human[j]].width >= 70){
 			putText(frame, name.str(), Point(human_distance[0] - 10, boundRect[human[j]].y - 20), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 0, 255));
 			rectangle(frame, boundRect[human[j]].tl(), boundRect[human[j]].br(), color1, 2, 8, 0);
-		}}
+			}
+		}
 		imshow("Thermal blobs", frame);
 		if (frame.empty()) break;
 		end = clock();
