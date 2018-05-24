@@ -128,14 +128,14 @@ int main(int argc, char **argv)
 		//If there was a person detected, we send his distance
 		if (y != 0)
 		{
-			human_dis = min_human;
+			human_dis.data = min_human;
 			pub2.publish(human_dis);
 		}
 
 		//If there was a car detected, we send its distance
 		if (y2 != 0)
 		{
-			car_dis = min_cars;
+			car_dis.data = min_cars;
 			pub3.publish(car_dis);			
 		}
 

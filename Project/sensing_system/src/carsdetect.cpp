@@ -41,7 +41,7 @@ void callbackDist(const std_msgs::Float32MultiArray::ConstPtr& msgs)
 
 /** Function Headers */
 void detect(Mat frame)
-{
+{/*
 	msg.data.clear();
 
 	cvtColor(frame, frame_gray, COLOR_BGR2GRAY);
@@ -59,13 +59,13 @@ void detect(Mat frame)
 			msg.data.push_back(begin);
 			msg.data.push_back(bend);
 		}
-	}
+	}*/
 }
 
 void display(Mat frame)
-{
+{/*
 	int temp = 0;
-	for (int i = 0; i < car_distance.size(); i + 2)
+	for (int i = 0; i < car_distance; i + 2)
 	{
 		stringstream name;
 		if (car_distance[1] == 0)
@@ -91,7 +91,7 @@ void display(Mat frame)
 		}
 	}
 	//-- Show what you got
-	imshow(window_name, frame);
+	imshow(window_name, frame);*/
 }
 
 class ImageConverter
@@ -165,7 +165,7 @@ int main(int argc, char** argv)
 	if (!eyes_cascade.load("/home/drawn/opencv/data/haarcascades/bike.xml")) { printf("--(!)Error loading eyes cascade\n"); };
 
 	while (ros::ok())
-	{
+	{/*
 		start = clock();
 		if (our_frame) {
 			Mat frame = our_frame->image;
@@ -187,7 +187,7 @@ int main(int argc, char** argv)
 		}
 		end = clock();
 		std::cout << "Time required for execution: " << (double)(end - start) / CLOCKS_PER_SEC << " seconds." << std::endl;
-		
+		*/
 	}
 	return 0;
 }
