@@ -25,13 +25,12 @@ vector<int> human_prev;
 vector<Rect> boundRect;
 vector<Rect> boundRect_prev;
 //Array, saving information about detected human's starting position in the image and its distance from the sensing system
-float human_distance[2];
+float human_distance;
 
 //Function saves information from the /humanDistance topic, published by the depth sensor
-void callbackDist(const std_msgs::Float32MultiArray::ConstPtr& msgs)
+void callbackDist(const std_msgs::ConstPtr& msgs)
 {
-	human_distance[0] = msgs->data[0];
-	human_distance[1] = msgs->data[1];
+	human_distance = msgs->data[0];
 }
 
 int main(int argc, char **argv)
@@ -137,14 +136,14 @@ int main(int argc, char **argv)
 
 			stringstream name;
 
-			if (human_distance[1] > 0)
+			if (human_distance > 0)
 			{
-				name << "Human. Distance: " << human_distance[1];
+				name << "Human. Distance: " << human_distance;
 				
 			} else {name << "Human. Distance: N/A";}
-			std::cout << "Distance, " << human_distance [1] << " " << human_distance[0] << std::endl;
+			std::cout << "Distance, " << human_distance << " " << begin << std::endl;
 			if(boundRect[human[j]].height >= 120 && boundRect[human[j]].width >= 70){
-			putText(frame, name.str(), Point(human_distance[0] - 10, boundRect[human[j]].y - 20), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 0, 255));
+			putText(frame, name.str(), Point(begin - 10, boundRect[human[j]].y - 20), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 0, 255));
 			rectangle(frame, boundRect[human[j]].tl(), boundRect[human[j]].br(), color1, 2, 8, 0);
 			}
 		}
