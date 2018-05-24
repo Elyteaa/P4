@@ -1,4 +1,3 @@
-
 #include <iostream>
 #include <vector>
 #include <stdio.h>
@@ -8,11 +7,11 @@
 #include "std_msgs/Int32MultiArray.h"
 #include "std_msgs/Int32.h"
 #include "std_msgs/Float32MultiArray.h"
+#include <math.h>
 
 //Array saves data from one full laser scan (58 degrees)
 float distance[640];
-int x, y;
-std::vector<int> cars;
+int x, y, x2, y2;
 
 //The function saves laser scan data to a global variable, which will be used later
 void sensor(const sensor_msgs::LaserScan::ConstPtr& msgs)
@@ -32,10 +31,8 @@ void humans(const std_msgs::Int32MultiArray::ConstPtr& msgh)
 //Function saves positions of detected cars, sent by the RGB camera node
 void carsCallback(const std_msgs::Int32MultiArray::ConstPtr& message)
 {
-	cars.clear();
-	for (int i = 0; message->data.size(); i++) {
-		cars[i] = message->data[i];
-	}
+	x2 = message->data[0];
+	y2 = message->data[1];
 }
 
 int main(int argc, char **argv)
@@ -61,10 +58,10 @@ int main(int argc, char **argv)
 	while (ros::ok())
 	{
 		std::vector<float> min_human(1);
+		std::vector<float> min_cars(1);
 		bool minHumanSet = false;
-		std::vector<float> min_cars(cars.size());
+		bool minCarSet = false;
 		bool go = true;
-		std::vector<bool> minCarSet(cars.size(), false);
 		human_dis.data.clear();
 		car_dis.data.clear();
 
@@ -93,18 +90,22 @@ int main(int argc, char **argv)
 			}
 
 			//The loop calculates distance to the detected cars
-			if (cars.size() != 0) {
-				for (int j = 0; j < cars.size(); j + 2) {
-					//If a car is in the blind spot, we skip it
-					if ((cars.at(j) >= 389) && (cars.at(j) <= 1547) && (cars.at(j+1) >= 389) && (cars.at(j+1) <= 1547))
-					{if ((!minCarSet[j]) && (distance[i] != 0)) { min_cars[j] = distance[i]; }
-					if ((distance[i] <= 2.5) && (distance[i] != 0))
+			//If a car is in the blind spot, we skip it
+			if ((y2 != 0) && (x2 >= 389) && (x2 <= 1547) && (y2 >= 389) && (y2 <= 1547))
+			{
+				if ((!minCarSet) && (!isnan(distance[i])) && (distance[i] > 0))
 					{
-						std::cout << "A car is closer than 2.5 meters" << std::endl;
-						turtle.data = 0;
-						pub.publish(turtle); //message sent to the turtlebot to stop
+						min_cars[0] = distance[i];
+						minCarSet = true;
+						std::cout <<	"SET" << std::endl;
 					}
-					}
+
+				if ((distance[i] < min_cars[0]) && (distance[i] > 0)){min_cars[0] = distance[i];}
+				if ((distance[i] <= 2.5) && (distance[i] != 0))
+				{
+					std::cout << "A car is closer than 2.5 meters " << distance[i] << " " << min_cars[0] << std::endl;
+					turtle.data = 0;
+					pub.publish(turtle); //message sent to the turtlebot to stop
 				}
 			}
 
@@ -115,7 +116,7 @@ int main(int argc, char **argv)
 					go = false;
 					turtle.data = 0;
 					pub.publish(turtle);
-				}
+			}
 
 			//If no obstacles have been detected, the TurtleBot is commanded to go forward
 			if (go)
@@ -129,19 +130,22 @@ int main(int argc, char **argv)
 		{
 			human_dis.data.push_back(x);
 			human_dis.data.push_back(min_human[0]);
-			pub2.publish(human_dis);
+			pub2.publish(human_dis);			
+		}
 
-			//Transfer car distances back to the RGB node
-			for (int i = 0; i < min_cars.size(); i + 2) {
-				car_dis.data.push_back(min_cars[i]);
-				car_dis.data.push_back(cars[i]);
-			}
+		//Transfer car distances back to the RGB node
+		if(y2 != 0)
+		{
+			car_dis.data.push_back(x2);
+			car_dis.data.push_back(min_cars[0]);
 			pub3.publish(car_dis);
 		}
-		x = 0;
-		y = 0;
+
+		x = 0; x2 = 0;
+		y = 0; y2 = 0;
+
 		ros::spinOnce();
-		loop_rate.sleep();
+		//loop_rate.sleep();
 	}
 	return 0;
 }
