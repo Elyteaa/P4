@@ -1,6 +1,6 @@
 #include "ros/ros.h"
 #include "std_msgs/Int32MultiArray.h"
-#include "std_msgs/Float32.h"
+#include "std_msgs/Float32MultiArray.h"
 
 #include <string>
 #include <sstream>
@@ -25,12 +25,13 @@ vector<int> human_prev;
 vector<Rect> boundRect;
 vector<Rect> boundRect_prev;
 //Array, saving information about detected human's starting position in the image and its distance from the sensing system
-float human_distance;
+float human_distance[2];
 
 //Function saves information from the /humanDistance topic, published by the depth sensor
-void callbackDist(const std_msgs::Float32::ConstPtr& msgs)
+void callbackDist(const std_msgs::Float32MultiArray::ConstPtr& msgs)
 {
-	human_distance = msgs->data;
+	human_distance[0] = msgs->data[0];
+	human_distance[1] = msgs->data[1];
 }
 
 int main(int argc, char **argv)
@@ -51,7 +52,7 @@ int main(int argc, char **argv)
 	ros::Rate loop_rate(10);
 
 	//Capturing image form the thermal camera
-	VideoCapture cap("http://169.254.228.255/mjpg/video.mjpg?");
+	VideoCapture cap("http://169.254.229.0/mjpg/video.mjpg?");
 
 	if (!cap.isOpened())
 	{
@@ -59,6 +60,10 @@ int main(int argc, char **argv)
 	getchar();
 	return -1;
 	}
+
+	int frame_width = cap.get(CV_CAP_PROP_FRAME_WIDTH);
+    int frame_height = cap.get(CV_CAP_PROP_FRAME_HEIGHT);
+    VideoWriter video("out.mp4",CV_FOURCC('M','J','P','G'),10, Size(frame_width,frame_height),true);
 
 	while (cap.isOpened())
 	{
@@ -115,43 +120,40 @@ int main(int argc, char **argv)
 			}
 		}
 
-		int beg;
 		sort( human.begin(), human.end() );
 		human.erase(unique(human.begin(), human.end()), human.end());
 		//Send positions of detected humans to the Asus sensor, so that it can estimate distance to them
-		std::cout << human.size() << std::endl;
+		//std::cout << human.size() << std::endl;
 		for (int j = 0; j < human.size(); j++)
 		{
 			if (ros::ok())
 			{
 				std_msgs::Int32MultiArray msg;
 				msg.data.clear();
-				beg = boundRect[human[j]].x;
+				int begin = boundRect[human[j]].x;
 				int bend = boundRect[human[j]].x + boundRect[human[j]].width;
-				msg.data.push_back(beg);
+				msg.data.push_back(begin);
 				msg.data.push_back(bend);
 				chatter_pub.publish(msg);
 				loop_rate.sleep();
 				ros::spinOnce();
 			}
-
 			stringstream name;
-
-			if (human_distance > 0)
+			if (human_distance[1] > 0)
 			{
-				name << "Human. Distance: " << human_distance;
+				name << "Human. Distance: " << human_distance[1];
 				
 			} else {name << "Human. Distance: N/A";}
-			std::cout << "Distance, " << human_distance << " " << beg << std::endl;
+			std::cout << "Distance, " << human_distance [1] << " " << human_distance[0] << std::endl;
 			if(boundRect[human[j]].height >= 120 && boundRect[human[j]].width >= 70){
-			putText(frame, name.str(), Point(beg - 10, boundRect[human[j]].y - 20), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 0, 255));
+			putText(frame, name.str(), Point(human_distance[0] - 10, boundRect[human[j]].y - 20), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 0, 255));
 			rectangle(frame, boundRect[human[j]].tl(), boundRect[human[j]].br(), color1, 2, 8, 0);
-			}
-		}
+		}}
 		imshow("Thermal blobs", frame);
+		video.write(frame);
 		if (frame.empty()) break;
 		end = clock();
-		std::cout << "Time required for execution: " << (double)(end - start) / CLOCKS_PER_SEC << " seconds." << std::endl;
+		//std::cout << "Time required for execution: " << (double)(end - start) / CLOCKS_PER_SEC << " seconds." << std::endl;
 		if (waitKey(10) >= 0) break;
 		
 		//ros::spinOnce();
