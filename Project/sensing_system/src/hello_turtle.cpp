@@ -31,9 +31,9 @@ public:
 
 		//stop the TurtleBot before the loop begins
 		geometry_msgs::Twist base_cmd;
-		base_cmd.linear.x = base_cmd.linear.y = base_cmd.angular.z = 0;
-
+		base_cmd.linear.x = base_cmd.linear.y = base_cmd.angular.z = 0;	
 		while (ros::ok()) {
+			//if (counter > 500) {base_cmd.linear.x = 0;}
 			if (turtle_move_command >= 1)
 			{
 				base_cmd.linear.x = 0.20;
@@ -55,7 +55,6 @@ public:
 void turtleMove(const std_msgs::Int32::ConstPtr& asus_msg_turtle)
 {
 	turtle_move_command = asus_msg_turtle->data;
-	cout << "The topic has been read" << endl;
 }
 
 int main(int argc, char** argv)
