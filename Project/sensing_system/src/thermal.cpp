@@ -25,25 +25,22 @@ vector<int> human_prev;
 vector<Rect> boundRect;
 vector<Rect> boundRect_prev;
 //Array, saving information about detected human's starting position in the image and its distance from the sensing system
-vector<float> human_distance;
+float human_distance[2];
 
 //Function saves information from the /humanDistance topic, published by the depth sensor
 void callbackDist(const std_msgs::Float32MultiArray::ConstPtr& msgs)
 {
-	human_distance.clear();
-	for (int i = 0; i < msgs->data.size(); i++)
-	{
-		human_distance[i] = msgs->data[i];
-	}
+	human_distance[0] = msgs->data[0];
+	human_distance[1] = msgs->data[1];
 }
 
 int main(int argc, char **argv)
 {
+	
 	clock_t start, end; //for testing
 	Mat frame;
 	Scalar color = Scalar(0, 0, 255); //red
 	Scalar color1 = Scalar(255, 0, 0); //blue
-	std_msgs::Int32MultiArray msg;
 	//stringstream name;
 
 	ros::init(argc, argv, "thermal_node_cpp");
@@ -66,6 +63,7 @@ int main(int argc, char **argv)
 
 	while (cap.isOpened())
 	{
+		
 		start = clock();
 		human_prev = human;
 		human.erase(human.begin(), human.end());
@@ -108,55 +106,52 @@ int main(int argc, char **argv)
 
 		//The loop tries to find humans, identified in a previous frame, which may have gotten further/closer from
 		//the sensing system
-		for (int n = 0; n < human_prev.size(); n++)
-		{
+		for (int n = 0; n < human_prev.size(); n++) {
 			for (int i = 0; i < boundRect.size(); i++) {
 				float compare = (float)boundRect[i].width / (float)boundRect_prev[human_prev.at(n)].width;
 				float compare2 = (float)boundRect[i].height / (float)boundRect_prev[human_prev.at(n)].height;
-				if ((0.8 <= compare) && (compare <= 1.5) && (0.8 <= compare2) && (compare2 <= 1.5)) {
+				if ((0.9 <= compare) && (compare <= 1.3) && (0.9 <= compare2) && (compare2 <= 1.3)) {
 					human.push_back(i);
 				}
 			}
 		}
 
-		msg.data.clear();
-		vector <int> tempBoundRectIndex;
+		sort( human.begin(), human.end() );
+		human.erase(unique(human.begin(), human.end()), human.end());
 		//Send positions of detected humans to the Asus sensor, so that it can estimate distance to them
+		std::cout << human.size() << std::endl;
 		for (int j = 0; j < human.size(); j++)
 		{
 			if (ros::ok())
 			{
+				std_msgs::Int32MultiArray msg;
+				msg.data.clear();
 				int begin = boundRect[human[j]].x;
 				int bend = boundRect[human[j]].x + boundRect[human[j]].width;
 				msg.data.push_back(begin);
 				msg.data.push_back(bend);
+				chatter_pub.publish(msg);
+				loop_rate.sleep();
+				ros::spinOnce();
 			}
-		}
-
-		chatter_pub.publish(msg);
-		loop_rate.sleep();
-		ros::spinOnce();
-
-		int temp = 0;
-		for (int j = 0; j < human_distance.size(); j + 2)
-		{
 			stringstream name;
-			if (human_distance[j] == 0)
+			if (human_distance[1] > 0)
 			{
-				name << "Human. Distance: N/A";
-			}
-			else { name << "Human. Distance: " << human_distance[j]; };
-			putText(frame, name.str(), Point(human_distance[j+1] - 10, msg.data[j+1] - 20), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 0, 255));
-			//might give an error regarding vector dimension
-			rectangle(frame, boundRect[human[temp]].tl(), boundRect[human[temp]].br(), color1, 2, 8, 0);
-			temp++;
-		}
-
+				name << "Human. Distance: " << human_distance[1];
+				
+			} else {name << "Human. Distance: N/A";}
+			std::cout << "Distance, " << human_distance [1] << " " << human_distance[0] << std::endl;
+			if(boundRect[human[j]].height >= 120 && boundRect[human[j]].width >= 70){
+			putText(frame, name.str(), Point(human_distance[0] - 10, boundRect[human[j]].y - 20), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 0, 255));
+			rectangle(frame, boundRect[human[j]].tl(), boundRect[human[j]].br(), color1, 2, 8, 0);
+		}}
 		imshow("Thermal blobs", frame);
 		if (frame.empty()) break;
 		end = clock();
 		std::cout << "Time required for execution: " << (double)(end - start) / CLOCKS_PER_SEC << " seconds." << std::endl;
 		if (waitKey(10) >= 0) break;
+		
+		//ros::spinOnce();
 	}
 	return 0;
 }
