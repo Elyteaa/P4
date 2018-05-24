@@ -28,7 +28,7 @@ vector<Rect> boundRect_prev;
 float human_distance;
 
 //Function saves information from the /humanDistance topic, published by the depth sensor
-void callbackDist(const std_msgs::ConstPtr& msgs)
+void callbackDist(const std_msgs::Float32::ConstPtr& msgs)
 {
 	human_distance = msgs->data[0];
 }
