@@ -52,7 +52,7 @@ int main(int argc, char **argv)
 	ros::Rate loop_rate(10);
 
 	//Capturing image form the thermal camera
-	VideoCapture cap("http://169.254.229.0/mjpg/video.mjpg?");
+	VideoCapture cap("http://169.254.228.255/mjpg/video.mjpg?");
 
 	if (!cap.isOpened())
 	{
@@ -61,10 +61,9 @@ int main(int argc, char **argv)
 	return -1;
 	}
 
-	//Uncomment this and video.write in the end if you want to save the capture
-	/*int frame_width = cap.get(CV_CAP_PROP_FRAME_WIDTH);
-    	int frame_height = cap.get(CV_CAP_PROP_FRAME_HEIGHT);
-    	VideoWriter video("out.mp4",CV_FOURCC('M','J','P','G'),10, Size(frame_width,frame_height),true);*/
+	int frame_width = cap.get(CV_CAP_PROP_FRAME_WIDTH);
+    int frame_height = cap.get(CV_CAP_PROP_FRAME_HEIGHT);
+    VideoWriter video("out.mp4",CV_FOURCC('M','J','P','G'),10, Size(frame_width,frame_height),true);
 
 	while (cap.isOpened())
 	{
@@ -151,10 +150,10 @@ int main(int argc, char **argv)
 			rectangle(frame, boundRect[human[j]].tl(), boundRect[human[j]].br(), color1, 2, 8, 0);
 		}}
 		imshow("Thermal blobs", frame);
-		//video.write(frame);
+		video.write(frame);
 		if (frame.empty()) break;
 		end = clock();
-		//std::cout << "Time required for execution: " << (double)(end - start) / CLOCKS_PER_SEC << " seconds." << std::endl;
+		std::cout << "Time required for execution (thermal): " << (double)(end - start) / CLOCKS_PER_SEC << " seconds." << std::endl;
 		if (waitKey(10) >= 0) break;
 		
 		//ros::spinOnce();

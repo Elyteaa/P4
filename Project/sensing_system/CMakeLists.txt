@@ -45,3 +45,4 @@ add_executable(rgb_cam_node src/carsdetect.cpp)
 find_package(OpenCV REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS})
 target_link_libraries(rgb_cam_node ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
+
