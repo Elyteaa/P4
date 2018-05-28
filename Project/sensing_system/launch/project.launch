@@ -6,17 +6,16 @@
      <!-- Specify your own path to the mono_camera.launch following the same pattern as above -->
      <include file="/home/drawn/catkin_ws/src/avt_vimba_camera/launch/mono_camera.launch"/> 
 
-
-     <node name="turtlebot_move" pkg="sensing_system" type="turtlebot_move" output="screen" >
-     </node>
-     
-     <node name="asus_node" pkg="sensing_system" type="asus_node" output="screen">
-     </node>
-
      <node name="thermal_node" pkg="sensing_system" type="thermal_node" output="screen">
      </node>
 
-     <!--node name="rgb_cam_node" pkg="sensing_system" type="rgb_cam_node" output="screen">
-     </node -->
-     
+     <node name="asus_node" pkg="sensing_system" type="asus_node" output="screen">
+     </node>
+
+     <node name="rgb_cam_node" pkg="sensing_system" type="rgb_cam_node" output="screen">
+     </node>
+       
+     <node name="turtlebot_move" pkg="sensing_system" type="turtlebot_move" output="screen" >
+     </node>
+
 </launch>
