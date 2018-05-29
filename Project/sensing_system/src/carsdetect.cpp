@@ -20,10 +20,9 @@ using namespace std;
 using namespace cv;
 using namespace cv_bridge;
 
-/** Global variables */
-String face_cascade_name, eyes_cascade_name;
-CascadeClassifier face_cascade; //faces = cars
-CascadeClassifier eyes_cascade; //eyes = bikes
+String car_cascade_name, eyes_cascade_name;
+CascadeClassifier car_cascade; 
+CascadeClassifier eyes_cascade;
 String window_name = "Capture - Car detection";
 static const string OPENCV_WINDOW = "Image window";
 int argc;
@@ -77,7 +76,6 @@ public:
 		our_frame = cv_ptr;
 		waitKey(5);
 
-		// Output video stream
 		image_pub_.publish(cv_ptr->toImageMsg());
 	}
 };
@@ -85,7 +83,7 @@ public:
 	/** @function main */
 	int main(int argc, char** argv)
 	{
-		clock_t start, end;
+		//clock_t start, end;
 		ros::init(argc, argv, "RGB_node");
 		ros::NodeHandle n;
 		ros::Rate loop_rate(10);
@@ -108,98 +106,62 @@ public:
 				Mat frame = our_frame->image;
 				CommandLineParser parser(argc, argv,
 					"{help h||}"
-					"{face_cascade|../../data/haarcascades/cars.xml|}"
+					"{car_cascade|../../data/haarcascades/cars.xml|}"
 					"{eyes_cascade|../../data/haarcascades/bike.xml|}");
 
-				//parser.about("\nThis program demonstrates using the cv::CascadeClassifier class to detect objects (Face + eyes) in a video stream.\n"
-					//"You can use Haar or LBP features.\n\n");
-				//parser.printMessage();
-
-				face_cascade_name = parser.get<String>("face_cascade");
+				car_cascade_name = parser.get<String>("car_cascade");
 				eyes_cascade_name = parser.get<String>("eyes_cascade");
 
-				//-- 1. Load the cascades
-				if (!face_cascade.load("/home/drawn/opencv/data/haarcascades/cars.xml")) { printf("--(!)Error loading face cascade\n"); return -1; };
+				//Load the cascades
+				if (!car_cascade.load("/home/drawn/opencv/data/haarcascades/cars.xml")) { printf("--(!)Error loading car cascade\n"); return -1; };
 				if (!eyes_cascade.load("/home/drawn/opencv/data/haarcascades/bike.xml")) { printf("--(!)Error loading eyes cascade\n"); return -1; };
 
-				//-- 3. Apply the classifier to the frame
-				std::vector<Rect> faces;
+				//Apply the classifier to the frame
+				std::vector<Rect> cars;
 				Mat frame_gray;
 
 				cvtColor(frame, frame_gray, COLOR_BGR2GRAY);
 				equalizeHist(frame_gray, frame_gray);
 
-				//-- Detect faces
-				face_cascade.detectMultiScale(frame_gray, faces, 1.1, 2, 0 | CASCADE_SCALE_IMAGE, Size(60, 60));
+				//Detect cars
+				car_cascade.detectMultiScale(frame_gray, cars, 1.1, 2, 0 | CASCADE_SCALE_IMAGE, Size(60, 60));
 
-				if (faces.size() > 0)
-				{
-					int comp, comp2;
-				for (size_t i = 0; i < faces.size(); i++)
+				for (size_t i = 0; i < cars.size(); i++)
 				{
 					if (ros::ok())
 					{
 						std_msgs::Int32MultiArray msg;
 						msg.data.clear();
-						int begin = faces[i].x;
-						int bend = faces[i].x + faces[i].width;
-						int ybegin = faces[i].y;
-						int yend = faces[i].y + faces[i].height;
+						int begin = cars[i].x;
+						int bend = cars[i].x + cars[i].width;
 						msg.data.push_back(begin);
 						msg.data.push_back(bend);
 						pub.publish(msg);
 						loop_rate.sleep();
 						ros::spinOnce();
-						comp = begin + bend;
-						comp2 = ybegin + yend;
 					}
 
 					stringstream name;
+
 					if (car_distance[1] > 0)
 					{
 						name << "Car. Distance: " << car_distance[1];
 						
 					} else {name << "Car. Distance: N/A";}
 
-					putText(frame, name.str(), Point(car_distance[0] - 10, faces[i].y - 20), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 0, 255));	
-					Point center(faces[i].x + faces[i].width / 2, faces[i].y + faces[i].height / 2);
-					ellipse(frame, center, Size(faces[i].width / 2, faces[i].height / 2), 0, 0, 360, Scalar(255, 0, 255), 3, 8, 0);
-					if ((faces[i].y + faces[i].height / 2) <= 800 && (comp>= 400) && (comp2 >= 400) && (faces[i].y + faces[i].height / 2) >= 600)
-						{
-							car++;
-							std::cout << center << std::endl;
-						} else {fakecar++;}
-
+					putText(frame, name.str(), Point(car_distance[0] - 10, cars[i].y - 20), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 0, 255));	
+					Point center(cars[i].x + cars[i].width / 2, cars[i].y + cars[i].height / 2);
+					ellipse(frame, center, Size(cars[i].width / 2, cars[i].height / 2), 0, 0, 360, Scalar(255, 0, 255), 3, 8, 0);
 				}
-				} else {FN++;}
 
-				
-				//line(frame, Point(700, 300), Point(1200,300), Scalar(255, 0, 255), 3, 8, 0);
-				//line(frame, Point(700, 300), Point(700,800), Scalar(255, 0, 255), 3, 8, 0);
-				/*line(frame, Point(700, 0), Point(700,700), Scalar(255, 0, 255), 3, 8, 0);
-				line(frame, Point(800, 0), Point(800,700), Scalar(255, 0, 255), 3, 8, 0);
-				line(frame, Point(900, 0), Point(900,700), Scalar(255, 0, 255), 3, 8, 0);
-				line(frame, Point(1000, 0), Point(1000,700), Scalar(255, 0, 255), 3, 8, 0);
-				line(frame, Point(1100, 0), Point(1100,700), Scalar(255, 0, 255), 3, 8, 0);
-
-				line(frame, Point(0, 500), Point(1000,500), Scalar(255, 0, 255), 3, 8, 0);
-				line(frame, Point(0, 600), Point(1000,600), Scalar(255, 0, 255), 3, 8, 0);
-				line(frame, Point(0, 700), Point(1000,700), Scalar(255, 0, 255), 3, 8, 0);
-				line(frame, Point(0, 800), Point(1000,800), Scalar(255, 0, 255), 3, 8, 0);
-				line(frame, Point(0, 900), Point(1000,900), Scalar(255, 0, 255), 3, 8, 0);*/
-				//-- Show what you got
 				imshow(window_name, frame);
 				//end = clock();
 				our_frame.reset();
 			}
 			//std::cout << "Time required for execution (rgb): " << (double)(end - start) / CLOCKS_PER_SEC << " seconds." << std::endl;
-			//if (waitKey(10) == 27) { break; } // escape
+			if (waitKey(10) == 27) { break; } // escape
 			ros::spinOnce();
 			loop_rate.sleep();
 		}
-		float carav = car / 1000;
-		float fakecarav = fakecar / 1000;
-		std::cout << "TP "  << car << " FP " << fakecar << " FN " << FN << std::endl;
-		std::cout << "Correct car ratio: " << carav << " Fake car ratio: " << fakecarav << std::endl;
 		return 0;
 	}

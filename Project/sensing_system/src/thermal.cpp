@@ -37,7 +37,7 @@ void callbackDist(const std_msgs::Float32MultiArray::ConstPtr& msgs)
 int main(int argc, char **argv)
 {
 	
-	clock_t start, end; //for testing
+	//clock_t start, end; //for testing
 	Mat frame;
 	Scalar color = Scalar(0, 0, 255); //red
 	Scalar color1 = Scalar(255, 0, 0); //blue
@@ -71,7 +71,7 @@ int main(int argc, char **argv)
 	while (cap.isOpened() && (counter < 1000))
 	{
 		counter++;
-		start = clock();
+		//start = clock();
 		human_prev = human;
 		human.erase(human.begin(), human.end());
 		
@@ -128,17 +128,8 @@ int main(int argc, char **argv)
 
 		sort( human.begin(), human.end() );
 		human.erase(unique(human.begin(), human.end()), human.end());
+
 		//Send positions of detected humans to the Asus sensor, so that it can estimate distance to them
-		//std::cout << human.size() << std::endl;
-
-		if (human.size() > 0)
-		{
-			int temp = human.size();
-			rhuman++;
-			temp--;
-			fakehuman = fakehuman + temp;
-		}
-
 		for (int j = 0; j < human.size(); j++)
 		{
 			if (ros::ok())
@@ -153,29 +144,30 @@ int main(int argc, char **argv)
 				loop_rate.sleep();
 				ros::spinOnce();
 			}
+
 			stringstream name;
+
 			if (human_distance[1] > 0)
 			{
 				name << "Human. Distance: " << human_distance[1];
 				
 			} else {name << "Human. Distance: N/A";}
+
 			if(boundRect[human[j]].height >= 120 && boundRect[human[j]].width >= 70){
 			putText(frame, name.str(), Point(human_distance[0] - 10, boundRect[human[j]].y - 20), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 0, 255));
 			rectangle(frame, boundRect[human[j]].tl(), boundRect[human[j]].br(), color1, 2, 8, 0);
 		}
 		}
+
 		imshow("Thermal blobs", frame);
 		video.write(frame);
 		if (frame.empty()) break;
-		end = clock();
+		//end = clock();
 		//std::cout << "Time required for execution (thermal): " << (double)(end - start) / CLOCKS_PER_SEC << " seconds." << std::endl;
 		if (waitKey(10) >= 0) break;
 		
 		//ros::spinOnce();
 		std::cout << counter << std::endl;
 	}
-	float RR = rhuman / 1000;
-	std::cout << "TP " << rhuman << " FP " << fakehuman << std::endl;
-	std::cout << "RR " << RR << std::endl;
 	return 0;
 }
