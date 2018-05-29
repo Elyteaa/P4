@@ -1,6 +1,7 @@
 # P4
+4th semester Robotics semester project of Group 460 at Aalborg University, Denmark.
 
-This repository contains source code for the 2018 Spring Semester 2nd year Robotics Student group 460 P4 project.
+This repository contains source code used in the project.
 
 The folder Sandbox contains our try-out files and demonstrates our path to the final code.
 
