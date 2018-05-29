@@ -94,11 +94,17 @@ public:
 		ros::Publisher pub = n.advertise<std_msgs::Int32MultiArray>("/rgbCars", 10);
 
 		ImageConverter ic;
+		int counter = 0;
+		float car = 0;
+		float fakecar = 0;
+		int FN = 0;
 
-		while (ros::ok())
+		while (ros::ok() && (counter < 1000))
 		{
-			start = clock();
 			if (our_frame) {
+				std::cout << counter << std::endl;
+				counter++;
+				//start = clock();
 				Mat frame = our_frame->image;
 				CommandLineParser parser(argc, argv,
 					"{help h||}"
@@ -126,6 +132,9 @@ public:
 				//-- Detect faces
 				face_cascade.detectMultiScale(frame_gray, faces, 1.1, 2, 0 | CASCADE_SCALE_IMAGE, Size(60, 60));
 
+				if (faces.size() > 0)
+				{
+					int comp, comp2;
 				for (size_t i = 0; i < faces.size(); i++)
 				{
 					if (ros::ok())
@@ -134,11 +143,15 @@ public:
 						msg.data.clear();
 						int begin = faces[i].x;
 						int bend = faces[i].x + faces[i].width;
+						int ybegin = faces[i].y;
+						int yend = faces[i].y + faces[i].height;
 						msg.data.push_back(begin);
 						msg.data.push_back(bend);
 						pub.publish(msg);
 						loop_rate.sleep();
 						ros::spinOnce();
+						comp = begin + bend;
+						comp2 = ybegin + yend;
 					}
 
 					stringstream name;
@@ -147,21 +160,46 @@ public:
 						name << "Car. Distance: " << car_distance[1];
 						
 					} else {name << "Car. Distance: N/A";}
-					std::cout << "Distance, " << car_distance [1] << " " << car_distance[0] << std::endl;
 
 					putText(frame, name.str(), Point(car_distance[0] - 10, faces[i].y - 20), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 0, 255));	
 					Point center(faces[i].x + faces[i].width / 2, faces[i].y + faces[i].height / 2);
 					ellipse(frame, center, Size(faces[i].width / 2, faces[i].height / 2), 0, 0, 360, Scalar(255, 0, 255), 3, 8, 0);
+					if ((faces[i].y + faces[i].height / 2) <= 800 && (comp>= 400) && (comp2 >= 400) && (faces[i].y + faces[i].height / 2) >= 600)
+						{
+							car++;
+							std::cout << center << std::endl;
+						} else {fakecar++;}
+
 				}
+				} else {FN++;}
+
+				
+				//line(frame, Point(700, 300), Point(1200,300), Scalar(255, 0, 255), 3, 8, 0);
+				//line(frame, Point(700, 300), Point(700,800), Scalar(255, 0, 255), 3, 8, 0);
+				/*line(frame, Point(700, 0), Point(700,700), Scalar(255, 0, 255), 3, 8, 0);
+				line(frame, Point(800, 0), Point(800,700), Scalar(255, 0, 255), 3, 8, 0);
+				line(frame, Point(900, 0), Point(900,700), Scalar(255, 0, 255), 3, 8, 0);
+				line(frame, Point(1000, 0), Point(1000,700), Scalar(255, 0, 255), 3, 8, 0);
+				line(frame, Point(1100, 0), Point(1100,700), Scalar(255, 0, 255), 3, 8, 0);
+
+				line(frame, Point(0, 500), Point(1000,500), Scalar(255, 0, 255), 3, 8, 0);
+				line(frame, Point(0, 600), Point(1000,600), Scalar(255, 0, 255), 3, 8, 0);
+				line(frame, Point(0, 700), Point(1000,700), Scalar(255, 0, 255), 3, 8, 0);
+				line(frame, Point(0, 800), Point(1000,800), Scalar(255, 0, 255), 3, 8, 0);
+				line(frame, Point(0, 900), Point(1000,900), Scalar(255, 0, 255), 3, 8, 0);*/
 				//-- Show what you got
 				imshow(window_name, frame);
+				//end = clock();
 				our_frame.reset();
 			}
-			end = clock();
-			std::cout << "Time required for execution (rgb): " << (double)(end - start) / CLOCKS_PER_SEC << " seconds." << std::endl;
+			//std::cout << "Time required for execution (rgb): " << (double)(end - start) / CLOCKS_PER_SEC << " seconds." << std::endl;
 			//if (waitKey(10) == 27) { break; } // escape
 			ros::spinOnce();
 			loop_rate.sleep();
 		}
+		float carav = car / 1000;
+		float fakecarav = fakecar / 1000;
+		std::cout << "TP "  << car << " FP " << fakecar << " FN " << FN << std::endl;
+		std::cout << "Correct car ratio: " << carav << " Fake car ratio: " << fakecarav << std::endl;
 		return 0;
 	}

@@ -15,7 +15,7 @@
      <node name="rgb_cam_node" pkg="sensing_system" type="rgb_cam_node" output="screen">
      </node>
        
-     <node name="turtlebot_move" pkg="sensing_system" type="turtlebot_move" output="screen" >
-     </node>
+     <!--<node name="turtlebot_move" pkg="sensing_system" type="turtlebot_move" output="screen" >
+     </node>-->
 
 </launch>

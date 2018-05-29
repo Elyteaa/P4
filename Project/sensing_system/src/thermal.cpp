@@ -52,7 +52,7 @@ int main(int argc, char **argv)
 	ros::Rate loop_rate(10);
 
 	//Capturing image form the thermal camera
-	VideoCapture cap("http://169.254.228.255/mjpg/video.mjpg?");
+	VideoCapture cap("http://169.254.229.000/mjpg/video.mjpg?");
 
 	if (!cap.isOpened())
 	{
@@ -65,9 +65,12 @@ int main(int argc, char **argv)
     int frame_height = cap.get(CV_CAP_PROP_FRAME_HEIGHT);
     VideoWriter video("out.mp4",CV_FOURCC('M','J','P','G'),10, Size(frame_width,frame_height),true);
 
-	while (cap.isOpened())
+    int counter = 0;
+    float rhuman = 0;
+	float fakehuman = 0;
+	while (cap.isOpened() && (counter < 1000))
 	{
-		
+		counter++;
 		start = clock();
 		human_prev = human;
 		human.erase(human.begin(), human.end());
@@ -114,7 +117,10 @@ int main(int argc, char **argv)
 			for (int i = 0; i < boundRect.size(); i++) {
 				float compare = (float)boundRect[i].width / (float)boundRect_prev[human_prev.at(n)].width;
 				float compare2 = (float)boundRect[i].height / (float)boundRect_prev[human_prev.at(n)].height;
-				if ((0.9 <= compare) && (compare <= 1.3) && (0.9 <= compare2) && (compare2 <= 1.3)) {
+				int dist = abs(boundRect[i].x - boundRect_prev[human_prev[n]].x);
+				int dist2 = abs(boundRect[i].y - boundRect_prev[human_prev[n]].y);
+				if ((0.9 <= compare) && (compare <= 1.3) && (0.9 <= compare2) && (compare2 <= 1.3) && (dist <= 30) && (dist2 <= 30))
+				{
 					human.push_back(i);
 				}
 			}
@@ -124,6 +130,15 @@ int main(int argc, char **argv)
 		human.erase(unique(human.begin(), human.end()), human.end());
 		//Send positions of detected humans to the Asus sensor, so that it can estimate distance to them
 		//std::cout << human.size() << std::endl;
+
+		if (human.size() > 0)
+		{
+			int temp = human.size();
+			rhuman++;
+			temp--;
+			fakehuman = fakehuman + temp;
+		}
+
 		for (int j = 0; j < human.size(); j++)
 		{
 			if (ros::ok())
@@ -144,19 +159,23 @@ int main(int argc, char **argv)
 				name << "Human. Distance: " << human_distance[1];
 				
 			} else {name << "Human. Distance: N/A";}
-			std::cout << "Distance, " << human_distance [1] << " " << human_distance[0] << std::endl;
 			if(boundRect[human[j]].height >= 120 && boundRect[human[j]].width >= 70){
 			putText(frame, name.str(), Point(human_distance[0] - 10, boundRect[human[j]].y - 20), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 0, 255));
 			rectangle(frame, boundRect[human[j]].tl(), boundRect[human[j]].br(), color1, 2, 8, 0);
-		}}
+		}
+		}
 		imshow("Thermal blobs", frame);
 		video.write(frame);
 		if (frame.empty()) break;
 		end = clock();
-		std::cout << "Time required for execution (thermal): " << (double)(end - start) / CLOCKS_PER_SEC << " seconds." << std::endl;
+		//std::cout << "Time required for execution (thermal): " << (double)(end - start) / CLOCKS_PER_SEC << " seconds." << std::endl;
 		if (waitKey(10) >= 0) break;
 		
 		//ros::spinOnce();
+		std::cout << counter << std::endl;
 	}
+	float RR = rhuman / 1000;
+	std::cout << "TP " << rhuman << " FP " << fakehuman << std::endl;
+	std::cout << "RR " << RR << std::endl;
 	return 0;
 }

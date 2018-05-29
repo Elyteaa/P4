@@ -85,7 +85,7 @@ int main(int argc, char **argv)
 					//std::cout << "A human is closer than 2 meters" << std::endl;
 					//In case a human is detected closer than two meters, the TurtleBot is commanded to stop
 					turtle.data = 0;
-go = false;
+					go = false;
 					pub.publish(turtle);
 				}
 			}
@@ -98,15 +98,13 @@ go = false;
 					{
 						min_cars[0] = distance[i];
 						minCarSet = true;
-						std::cout <<	"SET" << std::endl;
 					}
 
 				if ((distance[i] < min_cars[0]) && (distance[i] > 0)){min_cars[0] = distance[i];}
 				if ((distance[i] <= 2.2) && (distance[i] != 0))
 				{
-					std::cout << "A car is closer than 2.2 meters " << min_cars[0] << std::endl;
 					turtle.data = 0;
-go = false;
+					go = false;
 					pub.publish(turtle); //message sent to the turtlebot to stop
 				}
 			}
